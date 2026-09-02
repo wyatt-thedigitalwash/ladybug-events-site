@@ -24,3 +24,17 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/*
+  Section spacing rule:
+  Each section defines its own vertical padding via data-bg (e.g. data-bg="light",
+  data-bg="dark"). When two consecutive sections share the same data-bg value, the
+  second one drops its top padding so matching backgrounds don't double-stack gaps.
+  Sections with different data-bg values keep full padding for breathing room.
+  Override any specific spot with an explicit padding class on that section.
+*/
+section[data-bg="light"] + section[data-bg="light"],
+section[data-bg="dark"] + section[data-bg="dark"],
+section[data-bg="accent"] + section[data-bg="accent"] {
+  padding-top: 0;
+}
