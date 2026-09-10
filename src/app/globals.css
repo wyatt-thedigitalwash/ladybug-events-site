@@ -1,28 +1,43 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fefefe;
+  --foreground: #665054;
+  --accent: #bdb069;
+  --secondary-accent: #517083;
+  --tint: #f4eeeb;
+  --ladybug: #a8463f;
+  /* Solid equivalents of the old translucent tints, so page dots cannot bleed through. */
+  --surface-accent: #f4f2e8;
+  --surface-slate: #edf0f2;
+  --surface-slate-strong: #e4e9ec;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-secondary-accent: var(--secondary-accent);
+  --color-tint: var(--tint);
+  --color-ladybug: var(--ladybug);
+  --color-surface-accent: var(--surface-accent);
+  --color-surface-slate: var(--surface-slate);
+  --color-surface-slate-strong: var(--surface-slate-strong);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-display: var(--font-playfair), Georgia, "Times New Roman", serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
 }
 
 /*
@@ -35,6 +50,86 @@ body {
 */
 section[data-bg="light"] + section[data-bg="light"],
 section[data-bg="dark"] + section[data-bg="dark"],
-section[data-bg="accent"] + section[data-bg="accent"] {
+section[data-bg="accent"] + section[data-bg="accent"],
+section[data-bg="tint"] + section[data-bg="tint"] {
   padding-top: 0;
+}
+
+
+/* Shell band: the underside curves like a ladybug's back. The horizontal
+   radius is a percentage so the curve stays gentle at any card width. */
+.shell-band {
+  border-bottom-left-radius: 50% 30px;
+  border-bottom-right-radius: 50% 30px;
+}
+/* The dip is a fixed depth over a scaling width, so it flattens as the card
+   grows. Deepen it once the cards go two-up. */
+@media (min-width: 1024px) {
+  .shell-band {
+    border-bottom-left-radius: 50% 42px;
+    border-bottom-right-radius: 50% 42px;
+  }
+}
+
+/*
+  Dialog motion.
+
+  Driven by keyframes and a `data-state` attribute rather than transitions with
+  `@starting-style`. The transition approach left the element pinned at its
+  starting opacity in testing, to the point that an `!important` override could
+  not move it, because a running transition outranks author styles. Keyframes
+  have no such dependency and the close is sequenced in JS, which waits for the
+  animation before calling `close()`.
+*/
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dialog-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+  }
+}
+
+@keyframes veil-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes veil-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+dialog[data-state="open"] {
+  animation: dialog-in 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+dialog[data-state="open"]::backdrop {
+  animation: veil-in 220ms ease both;
+}
+
+dialog[data-state="closing"] {
+  animation: dialog-out 160ms ease-in both;
+}
+dialog[data-state="closing"]::backdrop {
+  animation: veil-out 160ms ease-in both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog[data-state],
+  dialog[data-state]::backdrop {
+    animation-duration: 1ms;
+  }
 }

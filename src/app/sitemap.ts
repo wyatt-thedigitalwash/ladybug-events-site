@@ -2,7 +2,22 @@ import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://DOMAIN.com';
-  return [
-    { url: baseUrl, changeFrequency: 'weekly' as const, priority: 1.0 },
-  ].map(page => ({ ...page, lastModified: new Date() }));
+  const routes = [
+    { path: '', priority: 1.0 },
+    { path: '/weddings', priority: 0.9 },
+    { path: '/events', priority: 0.9 },
+    { path: '/baptisms', priority: 0.7 },
+    { path: '/community', priority: 0.8 },
+    { path: '/about', priority: 0.6 },
+    { path: '/contact', priority: 0.8 },
+    { path: '/contact/wedding', priority: 0.7 },
+    { path: '/contact/event', priority: 0.7 },
+  ];
+
+  return routes.map(({ path, priority }) => ({
+    url: `${baseUrl}${path}`,
+    changeFrequency: 'weekly' as const,
+    priority,
+    lastModified: new Date(),
+  }));
 }
