@@ -5,7 +5,7 @@
 - Industry: Event venue (weddings, private events, community programming)
 - Location: 603 Elnor Street, Plant City, FL 33563
 - Phone: (813) 776-5111
-- Email: TBD — not provided (client only gave phone)
+- Email: info@kdbugs.com receives all form submissions (wedding inquiries, event inquiries, community RSVPs), per the client. events@kdbugs.com is also a client address and can be added to `notifyRecipients` at any time; nothing technical prevents it. Neither address is published on the site.
 - Website URL: TBD (new build; legacy site kdbugs.com has no usable content to migrate)
 - Google Business Profile: exists (https://share.google/GcWXxuCbT5ZrmLjaJ), but is owned/managed by a friend of the client, not the client directly. Client does not need admin access. Confirm whether the site needs anything from the GBP (map embed, reviews) that would require that friend's cooperation.
 - Existing Linktree: https://linktr.ee/ladybugvenue (has an existing RSVP link for community events that "kind of sucks" per client — site should replace it)
@@ -55,9 +55,14 @@ From the client's "Small Weddings" one-sheet (Ladybug Event Venue Small Weddings
 Approved 2026-09-09. Two treatments, both inline SVG, no image files.
 - Hidden ladybug: one small line-art ladybug in ladybug red tucked into a section's background (`HiddenLadybug`), at a different spot per page. Every page hero has one; the home What We Host and community sections, the weddings closing section and the events pricing section have one too. Hidden below the 768px breakpoint. Keep it sparse and always clear of content.
 - No decorative dividers or rules under headings.
-- Shell band (`ShellBand`): card header panel in the #F4EEEB tint whose underside curves like a ladybug's back (`.shell-band`), marked with five spots, one of them ladybug red at 50% opacity. Four arrangements rotate across the cards so no two bands are identical; every arrangement keeps the same rules, five spots, sizes 20 to 34, exactly one red, and the red sits in a different quadrant on each card.
+- Shell band: the curved underside (`.shell-band`) is the shape, and it now appears in two treatments. On the Weddings and Events pricing card headers it is the #F4EEEB tint marked with five spots, one of them ladybug red at 50% opacity. On the four home offering cards the panel is a **photograph** of the space instead, at the client's request to show pictures rather than spots; `ShellBand` is that photo component and takes a `photo` prop. Spots are never drawn over a photo. Four arrangements rotate across the cards so no two bands are identical; every arrangement keeps the same rules, five spots, sizes 20 to 34, exactly one red, and the red sits in a different quadrant on each card.
 - Spot size follows a real ladybug, roughly a fifth of the shell's height. They were a twelfth of it and read as dust rather than markings, and vanished at phone width. Tonal spots sit at 10% since larger spots cover about four times the area.
-- Spots run the full width of the band. The medallion is bottom-left, so anything past 68% from the right must keep `top + size` at or under 64 to clear it at every card width. The card icon sits in a white medallion straddling the curve. Used on the four home offering cards. A card using it must be `overflow-hidden` with no padding of its own, and its content needs `pt-14` to clear the medallion.
+- Spots run the full width of the band. The medallion is bottom-left, so anything past 68% from the right must keep `top + size` at or under 64 to clear it at every card width. The card icon sits in a white medallion straddling the curve. A card using either treatment must be `overflow-hidden` with no padding of its own, and its content needs `pt-14` to clear the medallion.
+- On the photo treatment the clip sits on an inner element rather than the band wrapper, because the medallion hangs past the curve on purpose and an `overflow-hidden` parent cuts it in half.
+- The photo band is 200px tall (236px at lg), not the 104/128px the tinted band used. A photograph at 104px is a sliver.
+- A wash runs along the bottom fifth of the photo. The curve is the shape that makes the panel a ladybug's back rather than a rectangle, and against a bright sky or a white wall it vanished into the card.
+- Home card photos, chosen so no two show the same room and none repeats the chapel in the hero directly above them: Weddings takes the deck at dusk, Events the baby shower balloon arch, Baptisms the tiled pool, Community the workout class in the hall. Events is the only card showing a celebration rather than an empty room, and it took the yard corner with the bistro table until the baby shower photos arrived. Its crop is `center 30%`, since the arch and garland sit in the upper half of a tall frame.
+- `BandPhoto` takes an optional `position` (`object-position`), set as an inline style rather than a utility class because the value varies per photo and Tailwind cannot see a class name built at runtime. Baptisms is the only one that needs it, at `center 60%`: the basin sits in the lower half of a tall frame, so a centred crop filled the band with mural and showed almost no pool. Raising the percentage slides the crop window down the source, which moves the visible content up. Weddings cannot use a real wedding photo (client policy), which is why it takes the empty deck rather than a ceremony.
 - Watermark: large outline ladybug at 8% opacity cropped into the bottom-right corner of the tinted CTA band (`CtaBand`).
 - Ladybug red #A8463F is reserved for the ladybug motif and for card hover states. Hover borders use `ladybug/50` so they match the red spot exactly; the Learn more link uses full strength for legibility. Never use red for resting-state buttons, links, or body text.
 - Set ladybug transparency with an `opacity` class on the element, never an alpha color like `text-foreground/10`. Per-stroke alpha compounds where strokes meet and prints those joints darker than the rest of the drawing.
@@ -66,13 +71,70 @@ Approved 2026-09-09. Two treatments, both inline SVG, no image files.
 - No dot texture on section backgrounds. It was removed at the client's request; do not reintroduce it. The dots inside the card shell bands are a separate thing and stay.
 - Nothing over the home hero photo, and nothing in the footer.
 
+## Email Sending Domain
+Mail is sent from **thedigitalwash.com** (the agency's own domain, verified in Resend), not from kdbugs.com. The client is not verifying kdbugs.com and does not need to: Resend verifies the sending domain, not the recipient, so a verified sender reaches any address. This removes what looked like a hard constraint, that an unverified account can notify only the Resend account holder's own inbox.
+- Set via `LADYBUG_FROM_EMAIL`, currently `The Ladybug Venue <noreply@thedigitalwash.com>`.
+- kdbugs.com cannot be verified even if the client agreed: the Resend account is at its 10-domain plan cap. Adding it means upgrading the plan or removing an existing domain.
+- The display name carries the venue, so the owners see who it is from rather than the agency.
+- `replyTo` is the visitor on every send, so replying reaches them and never bounces off the sending domain.
+- The address does not need a real mailbox; Resend only needs the domain verified.
+- Trade-off worth knowing: the mail is DKIM-signed by thedigitalwash.com, so a recipient inspecting headers sees the agency rather than the venue. Irrelevant for internal notifications, and would matter only if the site ever sends to customers.
+
+## Form Handling
+Every form writes a row to Postgres and sends an email, and the two are independent. A submission that reaches the inbox but not the table is still actionable; one that reaches the table but not the inbox is recoverable from /admin. Only when both fail does the visitor see an error, and that error names the phone number.
+- Recipients are `notifyRecipients` in src/lib/site.ts (info@kdbugs.com only, see Business Info). `LADYBUG_NOTIFY_EMAIL` overrides per environment, which is how a preview deploy avoids mailing the owners.
+- `replyTo` is the submitter's address, so the owners hit reply rather than copying an address out of the body.
+- Every value is HTML-escaped before it reaches the email body. Unescaped, a name containing a tag gives anyone with the form a way to inject markup into the owners' inbox.
+- A rejected submission echoes the submitted values back in `FormState.values`, and each field reads that as its `defaultValue`. React resets an uncontrolled form once its action resolves, so without this a failed send hands back an empty form and the visitor retypes a whole wedding inquiry. Absent on success, so a completed form does clear.
+- **Every `<select>` additionally needs a `key` tied to its echoed value.** `defaultValue` on a select only sets the option's `defaultSelected` at mount, and React does not update it on re-render, so the reset snaps the select back to its first option. This was silently discarding the package, space and tour answers while the text fields refilled correctly, which is the worst version of the bug: the form looks like it kept everything. Text inputs need no key; React keeps their value attribute in sync.
+
+## Wedding Inquiry Fields
+Beyond contact details and date, the form asks the three things the owners need before they can quote.
+- Package: driven by `weddingPackages`, so the wording cannot drift from what the Weddings page advertises, plus a "not sure yet, help me choose" option.
+- Package and space are separate questions that sound like one. Package is what is included; space is how much of the property. A couple can want the all-inclusive package indoors only, so neither answer implies the other.
+- Package takes a full-width row. Its labels carry a price and truncated badly at half width, and the Space options were shortened for the same reason; "whole venue" was dropped from the space label since the package question now carries that idea.
+- Guest count is a number, hinted with `weddingGuestRange`, validated 1 to 500 server-side. The hint says an estimate is fine.
+- Start and end time are **optional and deliberately so**. A couple eight months out often has a date and a rough headcount but no schedule, and blocking the inquiry on a field they cannot answer loses the lead outright. Both halves are handled independently, so one without the other still reads ("From 10:00 AM").
+- Storage is Neon Postgres over `@neondatabase/serverless`, one append-only `submissions` table covering all three form kinds. One table keeps the admin list, the CSV export and the storage layer simple; three would triple all of them to save some null columns. The schema is created on first use and memoized, rather than through a migration runner.
+- The SQL has not been run against a live database yet. There was no local Postgres or Docker available, and the Neon HTTP driver cannot talk to one anyway, so the first real exercise of it is the first submission after DATABASE_URL is set.
+
+## Tour Booking
+Handled by Calendly, not built here. A booking system owns availability, double-booking prevention, timezones, reschedules, cancellations, reminders and calendar sync; getting any one wrong loses a tour or puts two couples on the doorstep at once, and a hand-rolled one would mean the owners cannot change their own hours without a code change.
+- The link lives in `tourBooking.calendlyUrl` in src/lib/site.ts. Paste it there and everything keyed off it appears: the `/contact/tour` scheduler, the "Book a Tour" band on Contact, and the sitemap entry.
+- While it is empty, none of that renders. `/contact/tour` still exists and shows a call-us fallback, so any link to it is never broken, but nothing on the site points there. The sitemap omits it too, since a "coming soon" page indexed as the answer for "ladybug venue tour" is worse than no page.
+- The Calendly script loads on `/contact/tour` only, not through the app shell, so the Performance audit does not find a third-party script on every route.
+- The embed has a visible fallback. If the script is blocked, offline or slow, the page says to call rather than showing an empty box, because a booking widget that silently fails to render just looks broken.
+- Client is finalizing the standing tour schedule with the owners the week of 2026-09-15.
+
+## Admin Submissions Page
+`/admin` lists every submission, with a CSV export at `/admin/export`.
+- Filtered by kind, except community RSVPs, which are split per event: the chips read All, Bingo, Free Workout Class, Wedding Inquiry, Event Inquiry. The owners run bingo and the workout class as two separate things and count heads for each separately, so one combined "RSVP" bucket was the wrong shape.
+- The per-event chips are built from `communityEvents`, filtered to `rsvpRequired`, so adding an event to the site adds its chip with no second edit. The food pantry has no form and never appears.
+- The CSV inherits whatever filter is showing and is named for it (`ladybug-bingo-2026-09-11.csv`), so two RSVP exports in a downloads folder are told apart without opening them. An unrecognised event in the query string is ignored rather than passed to the query.
+- One shared password in `LADYBUG_ADMIN_PASSWORD`; the audience is the owners, not a set of named accounts.
+- The cookie holds an HMAC of a fixed string keyed by the password, never the password, and is verified rather than trusted. Scoped to `/admin` so it is not sent with any public page request.
+- A wrong password and an unset environment variable return the same message, so the page gives nothing away.
+- The export returns 404 rather than 401 when signed out, and the route is noindex via metadata plus disallowed in robots.ts.
+- Cards, not a table. The three kinds do not share a column set, so a table is mostly empty cells and cannot be read on a phone without sideways scrolling.
+- CSV cells starting with `=`, `+`, `-` or `@` are prefixed with a tab. Excel and Sheets evaluate those as formulas, so a submitted name like `=HYPERLINK(...)` would otherwise run when the owners open the file. The file carries a UTF-8 BOM so Excel does not mangle accented names.
+- Event dates are held and printed as plain `YYYY-MM-DD` strings. Parsing one into a Date drags it across a timezone boundary and prints the day before.
+
+## Community Page Photography
+The workout photos are shared with the Events page from `workoutPhotos` in src/lib/site.ts, but the two pages argue different things from them: Events shows the hall takes any layout, Community shows the class itself.
+- Community pairs the copy with the one group portrait and runs the three landscapes as a row beneath.
+- The two portraits shown side by side ran to nearly 900px of column and pushed the heading off the top of the screen before the first landscape arrived. The second portrait lives on the Events page only.
+
 ## Events Page Photography
-Two galleries, answering different questions.
+Three galleries, answering different questions.
+- "A Baby Shower Here" is a private event actually happening in the hall. It outranks the workout class on this page: a baby shower is the celebration an Events visitor is picturing, where a fitness class needs explaining. Files live in `public/events/babyshower/`.
+- One landscape leads, then the three portraits as a row of three. All three portraits are 3:4, so they line up exactly.
+- The whole gallery is held to `max-w-3xl`, not the section's `max-w-6xl`. The landscape file is only 800px wide and was visibly soft stretched across 1152px. This is the one gallery on the page whose width is set by the source files rather than by the layout.
 - "The Spaces" is the rooms empty: hall, kitchen, deck, yard. Three-column masonry on the page ground.
 - "The Space in Use" is the venue full of people, from the free workout class. It is the only set showing the hall and deck actually in use, so it carries the point that the room is an open floor rather than a fixed layout. Files live in `public/workouts/`.
 - The in-use set is laid out by orientation, not run through the masonry: three landscapes in a row of three, then the two portraits in a row of two held to `max-w-3xl`. Three landscapes and two portraits cannot balance across masonry columns at any ordering, and the shortfall showed as a column of empty space. Matching shapes per row fill evenly and crop nothing, which matters when the subjects are people.
 - The portraits are held to a narrower measure because at a third of the page each one stands taller than the whole row above it.
 - Both rows sit in fixed-width containers past their breakpoint, so `sizes` names the pixel width rather than a vw fraction. A vw hint understated the box and the optimizer shipped a visibly soft image.
+- The baby shower photos are small files (600 to 800px on the long edge) next to the venue photography at 1440 to 1920px. Anywhere they are placed, check the rendered width against the file width before trusting the layout.
 - The section closes with a line linking to the community page, since these are the free workout class and the photos would otherwise raise a question the page does not answer.
 
 ## Container Widths
@@ -181,7 +243,7 @@ Client's guidance on both the inquiry form and RSVP system: no existing system t
 ### Visual Content
 - [ ] Logo files (final version in /public): client has it, has not sent the file yet
 - [ ] Owner portrait: client will only provide ONE photo — the sisters together, no individual portraits
-- [ ] Gallery/work photos: venue photos available; workout class photos available; wedding photos NOT allowed to be used per client policy (use venue-only shots for weddings); event (birthday/baby shower) photos: confirmed none, page should stay photo-light; baptism photos: available/uploaded per client
+- [ ] Gallery/work photos: venue photos available; workout class photos available; wedding photos NOT allowed to be used per client policy (use venue-only shots for weddings); event photos: four baby shower photos received 2026-09-11 and in use (`public/events/babyshower/`), superseding the earlier "confirmed none, keep the page photo-light". Client said five were sent; only 231, 232, 233 and 235 arrived, 234 is missing. No birthday photos yet; baptism photos: available/uploaded per client
 - [ ] Service-specific images: partial, see above
 - [ ] OG image: not started
 
@@ -197,13 +259,17 @@ Client's guidance on both the inquiry form and RSVP system: no existing system t
 - [ ] Google Analytics installed: N/A yet
 - [ ] Google Search Console verified: not started
 - [ ] Google Business Profile linked: exists, managed by a friend of the client (not the client). Not linked yet.
-- [ ] RSVP capture for Bingo + Workout Classes: needs a form that emails both owners on each submission (replacing current Linktree RSVP link)
-- [ ] Event inquiry form: two distinct flows (wedding vs. general event), needs server-side validation per Code Rules
+- [x] RSVP capture for Bingo + Workout Classes: built. Emails both owners and stores a row; replaces the Linktree RSVP link.
+- [x] Event inquiry form: two distinct flows (wedding vs. general event), server-side validated per Code Rules.
+- [ ] Neon Postgres provisioned: Vercel dashboard -> Storage -> Create Database -> Neon. Injects DATABASE_URL. The free plan is far more than this volume needs.
+- [ ] LADYBUG_ADMIN_PASSWORD set in Vercel, for /admin.
 - [ ] LED sign rental add-on ($75, runs 3 days pre-event through event close): needs to be represented somewhere, likely as an add-on within the inquiry flow or a dedicated line item on the Events/Weddings page
 
 ### Blocking Items for Launch
 - Logo file not yet delivered — also blocks font/typography decisions
-- Email address not yet provided
+- LADYBUG_FROM_EMAIL must be set in Vercel to an address on thedigitalwash.com. Without it the sender falls back to `onboarding@resend.dev`, which only delivers to the Resend account's own address, and the owners are never notified.
+- LADYBUG_ADMIN_PASSWORD is `LadyBug123!` (client's choice). It guards submitter names, emails and phone numbers, and the pattern is a common one; worth revisiting before launch.
+- Watch for "Resend rejected the notification" in the Vercel function logs. That is what a rejected send looks like; the form still reports success to the visitor, because the row was stored regardless.
 - Hours follow-up: client's "Yes" answer to whether other recurring hours exist or hours change seasonally needs a clarifying re-ask
 - GBP is managed by a third party (client's friend), not the client — confirm if the site needs anything from it that requires that person's involvement
 

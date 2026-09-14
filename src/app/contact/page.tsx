@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
 import Ladybug from "@/components/motifs/Ladybug";
 import { EventsIcon, WeddingIcon } from "@/components/OfferingIcons";
-import { business } from "@/lib/site";
+import { business, isTourBookingEnabled } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -62,6 +62,33 @@ export default function ContactPage() {
             </span>
           </Link>
         </div>
+
+        {/*
+          Booking a tour is a different action from sending an inquiry, so it
+          sits below the two inquiry cards rather than becoming a third one.
+          Hidden entirely until a Calendly link is configured, so the site
+          never shows a "Book a Tour" button that goes nowhere useful.
+        */}
+        {isTourBookingEnabled() && (
+          <div className="relative mx-auto mt-10 max-w-4xl px-6">
+            <div className="flex flex-col items-center gap-4 rounded-2xl bg-tint px-6 py-7 text-center sm:flex-row sm:justify-between sm:text-left">
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">
+                  Rather just see it first?
+                </h2>
+                <p className="mt-1 text-sm text-foreground/85">
+                  Pick a time that suits you and come walk the property.
+                </p>
+              </div>
+              <Link
+                href="/contact/tour"
+                className="shrink-0 rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background transition-colors hover:bg-secondary-accent"
+              >
+                Book a Tour
+              </Link>
+            </div>
+          </div>
+        )}
 
         <div className="relative mx-auto mt-10 max-w-4xl px-6">
           <p className="rounded-2xl border border-dashed border-foreground/20 px-6 py-5 text-center text-sm text-foreground/85">

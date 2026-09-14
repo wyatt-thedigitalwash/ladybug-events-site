@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { business } from "@/lib/site";
+import { business, siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -21,6 +21,9 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  // Without this, Next cannot resolve relative URLs in metadata to absolute
+  // ones, which is what social previews and canonical tags need.
+  metadataBase: new URL(siteUrl),
   title: {
     default: `${business.name} | Plant City, FL Event Venue`,
     template: `%s | ${business.name}`,

@@ -1,3 +1,9 @@
+/*
+  Canonical site URL, apex rather than www. Used by the sitemap, robots.txt and
+  metadataBase, so all three cannot drift apart.
+*/
+export const siteUrl = "https://kdbugs.com";
+
 export const business = {
   name: "The Ladybug Venue",
   address: {
@@ -10,6 +16,43 @@ export const business = {
   phoneHref: "tel:18137765111",
   linktree: "https://linktr.ee/ladybugvenue",
 };
+
+/*
+  Tour booking, handled by Calendly rather than built here.
+
+  A booking system owns availability, double-booking prevention, timezones,
+  reschedules, cancellations, reminders and calendar sync. Getting any one of
+  those wrong means a tour is lost or two couples arrive at once, and the
+  owners could not change their own hours without a code change.
+
+  TO GO LIVE: paste the Calendly scheduling link below. Everything keyed off
+  it appears at that point and stays hidden while it is empty, so there is
+  never a dead "Book a Tour" link on the site.
+  Example: "https://calendly.com/ladybugvenue/venue-tour"
+*/
+export const tourBooking = {
+  calendlyUrl: "",
+};
+
+export function isTourBookingEnabled(): boolean {
+  return tourBooking.calendlyUrl.trim().length > 0;
+}
+
+/*
+  Where every form submission is emailed.
+
+  kdbugs.com is not verified in Resend and is not going to be. It does not need
+  to be: verification governs the SENDING domain, not the recipient. Mail goes
+  out from thedigitalwash.com, which is verified, so it can be delivered to any
+  address. See LADYBUG_FROM_EMAIL in .env.example.
+
+  Currently info@ only, per the client. events@kdbugs.com can be added here
+  whenever they want it; nothing technical is stopping it.
+
+  LADYBUG_NOTIFY_EMAIL overrides this per environment, which is how a preview
+  deploy avoids mailing the owners.
+*/
+export const notifyRecipients = ["info@kdbugs.com"] as const;
 
 export const navLinks = [
   { href: "/", label: "Home" },
@@ -41,6 +84,82 @@ export const communityEvents = [
     rsvpRequired: false,
   },
 ] as const;
+
+/*
+  A baby shower held at the venue, client-supplied. The first photographs we
+  have of a private event in the hall, which is what the Events page sells, so
+  they outrank the workout class there: this is the celebration a visitor is
+  actually picturing.
+
+  One landscape and three portraits. Grouped by orientation when laid out, the
+  same rule the other galleries follow.
+*/
+export const babyShowerPhotos = {
+  room: {
+    src: "/events/babyshower/233.jpeg",
+    alt: "The indoor hall laid out with cloth-covered tables and folding chairs, guests seated throughout during a baby shower",
+    width: 800,
+    height: 600,
+  },
+  backdrop: {
+    src: "/events/babyshower/231.jpeg",
+    alt: "A baby shower backdrop in the hall, with a pink and white balloon garland around an arch reading Oh Baby and stacked letter blocks beside it",
+    width: 600,
+    height: 800,
+  },
+  guests: {
+    src: "/events/babyshower/232.jpeg",
+    alt: "Guests gathered together in the hall during a baby shower, with the decorated backdrop behind them",
+    width: 720,
+    height: 960,
+  },
+  game: {
+    src: "/events/babyshower/235.jpeg",
+    alt: "Guests playing a blindfolded party game around a small table, with wrapped gifts stacked behind them",
+    width: 600,
+    height: 800,
+  },
+} as const;
+
+/*
+  Photos from the free workout class, the only set we have of the venue with
+  people in it. Shared because two pages make different arguments from the same
+  five frames: Events uses them to show the hall takes any layout, Community
+  uses them to show the class itself. Dimensions are the files' real pixel
+  sizes so Next can reserve the right space before each one loads.
+*/
+export const workoutPhotos = {
+  hall: {
+    src: "/workouts/IMG_1277.JPG",
+    alt: "A class standing in rows across the open indoor hall, with the kitchen serving window behind them",
+    width: 1920,
+    height: 1280,
+  },
+  deck: {
+    src: "/workouts/IMG_1269.JPG",
+    alt: "A fitness class spread out across the outdoor deck under the string lights, with the fenced yard behind them",
+    width: 1920,
+    height: 1280,
+  },
+  backdrop: {
+    src: "/workouts/IMG_1286.JPG",
+    alt: "Class members gathered in front of the backdrop while the instructor leads from the front",
+    width: 1920,
+    height: 1280,
+  },
+  group: {
+    src: "/workouts/ee8f9613-a18e-46f6-a46b-f9f0a7d62b68.jpg",
+    alt: "The whole class posing together in front of a branded backdrop at the end of a session",
+    width: 825,
+    height: 1240,
+  },
+  instructor: {
+    src: "/workouts/IMG_1276.JPG",
+    alt: "An instructor speaking into a microphone in front of the venue's branded backdrop",
+    width: 1280,
+    height: 1920,
+  },
+} as const;
 
 /*
   Wedding packages, from the client's "Small Weddings" one-sheet.

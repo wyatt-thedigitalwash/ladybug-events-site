@@ -12,13 +12,29 @@ import {
   EventsIcon,
   WeddingIcon,
 } from "@/components/OfferingIcons";
-import { business, communityEvents } from "@/lib/site";
+import {
+  babyShowerPhotos,
+  business,
+  communityEvents,
+  workoutPhotos,
+} from "@/lib/site";
 
+/*
+  Each card leads with a photograph of the space that offering actually uses.
+  No two are of the same room, and none repeats the chapel in the hero directly
+  above them. Weddings takes the deck rather than the chapel for that reason,
+  and because client policy rules out photographs of real weddings, so the
+  empty space has to carry the page.
+*/
 const offerings = [
   {
     title: "Weddings",
     href: "/weddings",
     Icon: WeddingIcon,
+    photo: {
+      src: "/venue/Ladybug_Outdoor_Deck.jpg",
+      alt: "The outdoor deck at dusk, strung with warm string lights along the hedge",
+    },
     description:
       "Rent the whole venue, indoor and outdoor, or choose a small all-inclusive package built for a budget-friendly wedding day.",
   },
@@ -26,6 +42,13 @@ const offerings = [
     title: "Events",
     href: "/events",
     Icon: EventsIcon,
+    // The only card showing a celebration rather than an empty room, now that
+    // there are photos of one. An empty yard corner sold this far worse.
+    photo: {
+      ...babyShowerPhotos.backdrop,
+      // Tall frame, and the arch and balloon garland are in its upper half.
+      position: "center 30%",
+    },
     description:
       "Birthdays, baby showers, and private gatherings, with simple indoor or indoor plus outdoor pricing.",
   },
@@ -33,6 +56,14 @@ const offerings = [
     title: "Baptisms",
     href: "/baptisms",
     Icon: BaptismIcon,
+    photo: {
+      src: "/venue/LadybugEvents_Venue_BaptismPool.JPG",
+      alt: "The venue's tiled baptismal pool, set below a painted mural",
+      // The basin sits in the lower half of a tall frame, so a centred crop
+      // showed mostly mural. This drops the window far enough to catch the
+      // steps going down into the water.
+      position: "center 60%",
+    },
     description:
       "A warm, flexible space for baptism celebrations of any size.",
   },
@@ -40,6 +71,7 @@ const offerings = [
     title: "Community Events",
     href: "/community",
     Icon: CommunityIcon,
+    photo: workoutPhotos.hall,
     description:
       "Free bingo, workout classes, and a food pantry, open to the whole neighborhood.",
   },
@@ -112,13 +144,13 @@ export default function Home() {
             walk you through pricing, availability, and a tour.
           </p>
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:gap-8">
-            {offerings.map(({ Icon, ...offering }, i) => (
+            {offerings.map(({ Icon, ...offering }) => (
               <Link
                 key={offering.href}
                 href={offering.href}
                 className="group flex flex-col overflow-hidden rounded-3xl border border-foreground/10 bg-background transition-colors hover:border-ladybug/50"
               >
-                <ShellBand variant={i}>
+                <ShellBand photo={offering.photo}>
                   <Icon className="h-10 w-10" />
                 </ShellBand>
                 <div className="flex flex-1 flex-col p-8 pt-14">

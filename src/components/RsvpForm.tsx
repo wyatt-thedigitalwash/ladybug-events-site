@@ -7,8 +7,11 @@ import { initialFormState } from "@/lib/types";
 export default function RsvpForm({ event }: { event: string }) {
   const [state, formAction, pending] = useActionState(
     submitRsvp,
-    initialFormState
+    initialFormState,
   );
+  // Refilled from the rejected submission. React resets the form once the
+  // action resolves, and the reset restores each field to its defaultValue.
+  const prior = state.values ?? {};
 
   return (
     <form action={formAction} className="space-y-4">
@@ -18,19 +21,26 @@ export default function RsvpForm({ event }: { event: string }) {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-foreground">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-foreground"
+          >
             Name
           </label>
           <input
             id="name"
             name="name"
             type="text"
+            defaultValue={prior.name}
             required
             className="mt-1 w-full rounded-lg border border-foreground/20 bg-background px-3 py-2 text-foreground"
           />
         </div>
         <div>
-          <label htmlFor="guests" className="block text-sm font-medium text-foreground">
+          <label
+            htmlFor="guests"
+            className="block text-sm font-medium text-foreground"
+          >
             Number of Guests
           </label>
           <input
@@ -38,6 +48,8 @@ export default function RsvpForm({ event }: { event: string }) {
             name="guests"
             type="number"
             min={1}
+            max={100}
+            defaultValue={prior.guests}
             required
             className="mt-1 w-full rounded-lg border border-foreground/20 bg-background px-3 py-2 text-foreground"
           />
@@ -45,13 +57,17 @@ export default function RsvpForm({ event }: { event: string }) {
       </div>
 
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-foreground">
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium text-foreground"
+        >
           Email
         </label>
         <input
           id="email"
           name="email"
           type="email"
+          defaultValue={prior.email}
           required
           className="mt-1 w-full rounded-lg border border-foreground/20 bg-background px-3 py-2 text-foreground"
         />
@@ -69,7 +85,9 @@ export default function RsvpForm({ event }: { event: string }) {
         <p
           role="status"
           className={`text-sm ${
-            state.status === "success" ? "text-secondary-accent" : "text-red-600"
+            state.status === "success"
+              ? "text-secondary-accent"
+              : "text-red-600"
           }`}
         >
           {state.message}

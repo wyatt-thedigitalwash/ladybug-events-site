@@ -6,7 +6,13 @@ import PageHero from "@/components/PageHero";
 import CtaBand from "@/components/CtaBand";
 import HiddenLadybug from "@/components/motifs/HiddenLadybug";
 import ShellSpots from "@/components/motifs/ShellSpots";
-import { eventPackages, ledSignRental, venueAmenities } from "@/lib/site";
+import {
+  babyShowerPhotos,
+  eventPackages,
+  ledSignRental,
+  venueAmenities,
+  workoutPhotos,
+} from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Events",
@@ -60,7 +66,9 @@ const venuePhotos = [
 /*
   The venue with people in it. These are from the free workout class, the only
   photos we have of the hall and deck actually full, so they carry the point
-  that the room is an open floor rather than a fixed layout.
+  that the room is an open floor rather than a fixed layout. Shared with the
+  Community page from src/lib/site.ts, which makes the same frames the subject
+  rather than the setting.
 
   Split by orientation rather than run through the masonry used above. Three
   landscapes and two portraits will not balance across columns at any ordering,
@@ -68,33 +76,18 @@ const venuePhotos = [
   shapes fill evenly and still crop nothing.
 */
 const inUseWide = [
-  {
-    src: "/workouts/IMG_1269.JPG",
-    alt: "A fitness class spread out across the outdoor deck under the string lights, with the fenced yard behind them",
-  },
-  {
-    src: "/workouts/IMG_1277.JPG",
-    alt: "A class standing in rows across the open indoor hall, with the kitchen serving window behind them",
-  },
-  {
-    src: "/workouts/IMG_1286.JPG",
-    alt: "Class members gathered in front of the backdrop while the instructor leads from the front",
-  },
+  workoutPhotos.deck,
+  workoutPhotos.hall,
+  workoutPhotos.backdrop,
 ];
 
-const inUseTall = [
-  {
-    src: "/workouts/ee8f9613-a18e-46f6-a46b-f9f0a7d62b68.jpg",
-    alt: "The whole class posing together in front of a branded backdrop at the end of a session",
-    width: 825,
-    height: 1240,
-  },
-  {
-    src: "/workouts/IMG_1276.JPG",
-    alt: "An instructor speaking into a microphone in front of the venue's branded backdrop",
-    width: 1280,
-    height: 1920,
-  },
+const inUseTall = [workoutPhotos.group, workoutPhotos.instructor];
+
+// The three portraits from the baby shower; the landscape leads above them.
+const babyShowerRow = [
+  babyShowerPhotos.backdrop,
+  babyShowerPhotos.guests,
+  babyShowerPhotos.game,
 ];
 
 export default function EventsPage() {
@@ -221,6 +214,52 @@ export default function EventsPage() {
       <section data-bg="light" className="pb-20 md:pb-24">
         <div className="mx-auto max-w-6xl px-6">
           <h2 className="text-center text-3xl font-semibold tracking-tight text-foreground">
+            A Baby Shower Here
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-base leading-7 text-foreground/85">
+            One afternoon in the indoor hall, decorated and set for a baby
+            shower. The room came with the tables, the chairs and the floor;
+            everything else the family brought.
+          </p>
+
+          {/* The landscape leads, the three portraits follow as a row. Same
+              rule as the other galleries: matching shapes per row fill evenly
+              and crop nothing.
+
+              Held to max-w-3xl rather than the section's full 6xl. The file is
+              only 800px wide, and stretched across 1152px it was being upscaled
+              and came out visibly soft. */}
+          <div className="mx-auto mt-12 max-w-3xl overflow-hidden rounded-3xl">
+            <Image
+              src={babyShowerPhotos.room.src}
+              alt={babyShowerPhotos.room.alt}
+              width={babyShowerPhotos.room.width}
+              height={babyShowerPhotos.room.height}
+              sizes="(min-width: 768px) 768px, 90vw"
+              className="h-auto w-full"
+            />
+          </div>
+
+          <div className="mx-auto mt-6 grid max-w-3xl gap-6 sm:grid-cols-3">
+            {babyShowerRow.map((photo) => (
+              <div key={photo.src} className="overflow-hidden rounded-3xl">
+                <Image
+                  src={photo.src}
+                  alt={photo.alt}
+                  width={photo.width}
+                  height={photo.height}
+                  sizes="(min-width: 768px) 240px, (min-width: 640px) 31vw, 90vw"
+                  className="h-auto w-full"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section data-bg="light" className="pb-20 md:pb-24">
+        <div className="mx-auto max-w-6xl px-6">
+          <h2 className="text-center text-3xl font-semibold tracking-tight text-foreground">
             The Space in Use
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-base leading-7 text-foreground/85">
@@ -237,8 +276,8 @@ export default function EventsPage() {
                 <Image
                   src={photo.src}
                   alt={photo.alt}
-                  width={1920}
-                  height={1280}
+                  width={photo.width}
+                  height={photo.height}
                   sizes="(min-width: 1200px) 368px, (min-width: 640px) 31vw, 90vw"
                   className="h-auto w-full"
                 />
