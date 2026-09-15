@@ -1,15 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
 import CommunityRsvp from "@/components/CommunityRsvp";
+import { BreadcrumbJsonLd, ServiceJsonLd } from "@/components/seo/JsonLd";
 import { workoutPhotos } from "@/lib/site";
+import { pageMetadata, seoPages } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Community Events",
-  description:
-    "Free bingo, workout classes, and a food pantry at The Ladybug Venue in Plant City, FL. RSVP for bingo and workout classes.",
-};
+// The canonical drops ?event=, which only opens an RSVP dialog.
+export const metadata = pageMetadata(seoPages.community);
 
 /*
   The three landscape frames, run as a row under the lead. Laid out by
@@ -33,13 +31,19 @@ export default async function CommunityPage({
 
   return (
     <>
+      <ServiceJsonLd service="community" />
+      <BreadcrumbJsonLd page={seoPages.community} />
       <PageHero
         bug="bottom-left"
         title="Free Events for the Neighborhood"
         description="The Ladybug Venue opens its doors to the community with regular, free programming."
       />
 
-      <section data-bg="light" className="py-20 md:py-24">
+      <section
+        data-bg="light"
+        aria-label="Community events"
+        className="py-20 md:py-24"
+      >
         <div className="mx-auto max-w-5xl px-6">
           <CommunityRsvp
             initialEvent={typeof requested === "string" ? requested : undefined}
@@ -47,7 +51,11 @@ export default async function CommunityPage({
         </div>
       </section>
 
-      <section data-bg="light" className="pb-20 md:pb-24">
+      <section
+        data-bg="light"
+        aria-labelledby="workout-title"
+        className="pb-20 md:pb-24"
+      >
         <div className="mx-auto max-w-5xl px-6">
           {/*
             Copy beside the one portrait, then the landscapes as a row. The two
@@ -57,7 +65,10 @@ export default async function CommunityPage({
           */}
           <div className="grid gap-10 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:items-center md:gap-12">
             <div>
-              <h2 className="text-3xl font-semibold tracking-tight text-foreground">
+              <h2
+                id="workout-title"
+                className="text-3xl font-semibold tracking-tight text-foreground"
+              >
                 Saturdays at the Workout Class
               </h2>
               <p className="mt-4 text-base leading-7 text-foreground/85">

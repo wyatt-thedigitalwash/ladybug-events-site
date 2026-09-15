@@ -1,8 +1,16 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useId } from "react";
+import FormMessage from "./FormMessage";
+import HoneypotField from "./HoneypotField";
 import { submitRsvp } from "@/lib/actions";
+import { requiredField } from "@/lib/form-a11y";
+import { MAX_LENGTH } from "@/lib/form-limits";
 import { initialFormState } from "@/lib/types";
+
+const inputClass =
+  "mt-1 w-full rounded-lg border border-foreground/20 bg-background px-3 py-2 text-foreground";
+const labelClass = "block text-sm font-medium text-foreground";
 
 export default function RsvpForm({ event }: { event: string }) {
   const [state, formAction, pending] = useActionState(
@@ -13,63 +21,70 @@ export default function RsvpForm({ event }: { event: string }) {
   // action resolves, and the reset restores each field to its defaultValue.
   const prior = state.values ?? {};
 
+  /*
+    Ids are generated, not fixed. Every RSVP card carries its own dialog and
+    form, so a page with two cards would otherwise hold two "name" inputs, and
+    a label could focus the field in the other, closed dialog.
+  */
+  const uid = useId();
+  const idFor = (field: string) => `${uid}-${field}`;
+  const messageId = idFor("message");
+  const field = (name: string) => requiredField(state, name, messageId);
+
   return (
     <form action={formAction} className="space-y-4">
       {/* The event is chosen by the card the visitor opened, so there is no
           dropdown to re-answer. Still validated server-side in submitRsvp. */}
       <input type="hidden" name="event" value={event} />
+      <HoneypotField id={idFor("website")} />
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label
-            htmlFor="name"
-            className="block text-sm font-medium text-foreground"
-          >
+          <label htmlFor={idFor("name")} className={labelClass}>
             Name
           </label>
           <input
-            id="name"
+            id={idFor("name")}
             name="name"
             type="text"
             defaultValue={prior.name}
+            maxLength={MAX_LENGTH.name}
             required
-            className="mt-1 w-full rounded-lg border border-foreground/20 bg-background px-3 py-2 text-foreground"
+            {...field("name")}
+            className={inputClass}
           />
         </div>
         <div>
-          <label
-            htmlFor="guests"
-            className="block text-sm font-medium text-foreground"
-          >
+          <label htmlFor={idFor("guests")} className={labelClass}>
             Number of Guests
           </label>
           <input
-            id="guests"
+            id={idFor("guests")}
             name="guests"
             type="number"
             min={1}
             max={100}
             defaultValue={prior.guests}
             required
-            className="mt-1 w-full rounded-lg border border-foreground/20 bg-background px-3 py-2 text-foreground"
+            {...field("guests")}
+            className={inputClass}
           />
         </div>
       </div>
 
       <div>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-foreground"
-        >
+        <label htmlFor={idFor("email")} className={labelClass}>
           Email
         </label>
         <input
-          id="email"
+          id={idFor("email")}
           name="email"
           type="email"
           defaultValue={prior.email}
+          maxLength={MAX_LENGTH.email}
           required
-          className="mt-1 w-full rounded-lg border border-foreground/20 bg-background px-3 py-2 text-foreground"
+          {...field("email")}
+          className={inputClass}
         />
       </div>
 
@@ -81,18 +96,7 @@ export default function RsvpForm({ event }: { event: string }) {
         {pending ? "Sending..." : "RSVP"}
       </button>
 
-      {state.status !== "idle" && (
-        <p
-          role="status"
-          className={`text-sm ${
-            state.status === "success"
-              ? "text-secondary-accent"
-              : "text-red-600"
-          }`}
-        >
-          {state.message}
-        </p>
-      )}
+      <FormMessage id={messageId} state={state} />
     </form>
   );
 }

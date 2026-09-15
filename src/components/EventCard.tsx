@@ -39,7 +39,8 @@ export default function EventCard({
         <Heading className="text-2xl font-semibold text-foreground">
           {name}
         </Heading>
-        <p className="mt-4 text-base text-foreground/60">{cadence}</p>
+        {/* 85% clears 4.5:1 on the card; 60% was 2.8. */}
+        <p className="mt-4 text-base text-foreground/85">{cadence}</p>
         {/* Tabular figures so the times line up across the row. */}
         <p className="mt-0.5 text-xl font-semibold tabular-nums text-foreground">
           {time}

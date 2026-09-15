@@ -1,78 +1,58 @@
 "use server";
 
-import { saveSubmission } from "@/lib/db";
-import { sendNotification, type EmailField } from "@/lib/email";
-import type { FormState, SubmissionInput } from "@/lib/types";
-
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-// Long enough for any real answer, short enough that nobody can post a novel
-// into the owners' inbox.
-const MAX_FIELD = 2000;
-
-type Values = Record<string, string>;
-
-function collect(formData: FormData, fields: string[]): Values {
-  const values: Values = {};
-  for (const field of fields) {
-    const raw = formData.get(field);
-    values[field] = typeof raw === "string" ? raw.trim().slice(0, MAX_FIELD) : "";
-  }
-  return values;
-}
-
-function missingFrom(values: Values, required: string[]): string[] {
-  return required.filter((field) => !values[field]);
-}
-
-// Every rejection carries the values back so the form can refill itself.
-function reject(message: string, values: Values): FormState {
-  return { status: "error", message, values };
-}
+import {
+  OPTIONS,
+  collect,
+  invalidChoices,
+  isDate,
+  isEmail,
+  isPhone,
+  isTime,
+  missingFrom,
+  reject,
+  tooLongMessage,
+} from "@/lib/form-validation";
+import { isHoneypotFilled } from "@/lib/honeypot";
+import { SUCCESS, record } from "@/lib/submission";
+import type { FormState } from "@/lib/types";
 
 /*
-  Store and notify. The two are independent on purpose: a submission that lands
-  in the table but not the inbox is still recoverable from /admin, and one that
-  lands in the inbox but not the table is still actionable. Only losing both is
-  a failure the visitor needs to hear about.
+  Every action opens with the honeypot. A filled one is a bot: it gets the
+  normal success state, and nothing is stored, sent or counted.
 */
-async function record(
-  input: SubmissionInput,
-  email: { subject: string; heading: string; fields: EmailField[] },
-  values: Values
-): Promise<FormState> {
-  const [stored, notified] = await Promise.all([
-    saveSubmission(input),
-    sendNotification({ ...email, replyTo: input.email }),
-  ]);
-
-  if (!stored && !notified) {
-    return reject(
-      "We couldn't send that just now. Please try again in a moment, or call us at (813) 776-5111.",
-      values
-    );
-  }
-
-  return { status: "success", message: "Thanks! We'll be in touch soon." };
-}
 
 export async function submitRsvp(
   _prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
-  const values = collect(formData, ["name", "email", "event", "guests"]);
+  if (isHoneypotFilled(formData)) return SUCCESS;
 
-  if (missingFrom(values, ["name", "email", "event", "guests"]).length > 0) {
-    return reject("Please fill out all fields.", values);
+  const { values, tooLong } = collect(formData, ["name", "email", "event", "guests"]);
+
+  const missing = missingFrom(values, ["name", "email", "event", "guests"]);
+  if (missing.length > 0) {
+    return reject("Please fill out all fields.", values, missing);
   }
 
-  if (!EMAIL_PATTERN.test(values.email)) {
-    return reject("Please enter a valid email address.", values);
+  if (tooLong.length > 0) {
+    return reject(tooLongMessage(tooLong), values, tooLong);
+  }
+
+  if (!isEmail(values.email)) {
+    return reject("Please enter a valid email address.", values, ["email"]);
+  }
+
+  // The event is a hidden input set by the card the visitor opened, so a name
+  // outside the list can only come from a hand-built request.
+  if (invalidChoices(values, { event: OPTIONS.rsvpEvent }).length > 0) {
+    return reject("Please choose one of our community events.", values, ["event"]);
   }
 
   const guests = Number(values.guests);
   if (!Number.isInteger(guests) || guests < 1 || guests > 100) {
-    return reject("Please enter a number of guests between 1 and 100.", values);
+    return reject("Please enter a number of guests between 1 and 100.", values, [
+      "guests",
+    ]);
   }
 
   return record(
@@ -101,7 +81,9 @@ export async function submitWeddingInquiry(
   _prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
-  const values = collect(formData, [
+  if (isHoneypotFilled(formData)) return SUCCESS;
+
+  const { values, tooLong } = collect(formData, [
     "name",
     "email",
     "phone",
@@ -131,16 +113,44 @@ export async function submitWeddingInquiry(
     "tour",
   ]);
   if (missing.length > 0) {
-    return reject("Please fill out all required fields.", values);
+    return reject("Please fill out all required fields.", values, missing);
   }
 
-  if (!EMAIL_PATTERN.test(values.email)) {
-    return reject("Please enter a valid email address.", values);
+  if (tooLong.length > 0) {
+    return reject(tooLongMessage(tooLong), values, tooLong);
+  }
+
+  if (!isEmail(values.email)) {
+    return reject("Please enter a valid email address.", values, ["email"]);
+  }
+
+  if (!isPhone(values.phone)) {
+    return reject("Please enter a valid phone number.", values, ["phone"]);
+  }
+
+  if (!isDate(values.eventDate)) {
+    return reject("Please enter a valid wedding date.", values, ["eventDate"]);
   }
 
   const guests = Number(values.guests);
   if (!Number.isInteger(guests) || guests < 1 || guests > 500) {
-    return reject("Please enter a valid guest count.", values);
+    return reject("Please enter a valid guest count.", values, ["guests"]);
+  }
+
+  const badChoices = invalidChoices(values, {
+    packageName: OPTIONS.weddingPackage,
+    space: OPTIONS.space,
+    tour: OPTIONS.tour,
+  });
+  if (badChoices.length > 0) {
+    return reject("Please choose an option from the list.", values, badChoices);
+  }
+
+  const badTimes = (["startTime", "endTime"] as const).filter(
+    (field) => values[field] && !isTime(values[field])
+  );
+  if (badTimes.length > 0) {
+    return reject("Please enter a valid time.", values, [...badTimes]);
   }
 
   const hours =
@@ -187,7 +197,9 @@ export async function submitEventInquiry(
   _prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
-  const values = collect(formData, [
+  if (isHoneypotFilled(formData)) return SUCCESS;
+
+  const { values, tooLong } = collect(formData, [
     "name",
     "email",
     "phone",
@@ -206,11 +218,31 @@ export async function submitEventInquiry(
     "space",
   ]);
   if (missing.length > 0) {
-    return reject("Please fill out all required fields.", values);
+    return reject("Please fill out all required fields.", values, missing);
   }
 
-  if (!EMAIL_PATTERN.test(values.email)) {
-    return reject("Please enter a valid email address.", values);
+  if (tooLong.length > 0) {
+    return reject(tooLongMessage(tooLong), values, tooLong);
+  }
+
+  if (!isEmail(values.email)) {
+    return reject("Please enter a valid email address.", values, ["email"]);
+  }
+
+  if (!isPhone(values.phone)) {
+    return reject("Please enter a valid phone number.", values, ["phone"]);
+  }
+
+  if (!isDate(values.eventDate)) {
+    return reject("Please enter a valid event date.", values, ["eventDate"]);
+  }
+
+  const badChoices = invalidChoices(values, {
+    eventType: OPTIONS.eventType,
+    space: OPTIONS.space,
+  });
+  if (badChoices.length > 0) {
+    return reject("Please choose an option from the list.", values, badChoices);
   }
 
   return record(

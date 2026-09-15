@@ -24,6 +24,7 @@ export default function RsvpButton({
   autoOpen?: boolean;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
   const headingId = useId();
   // Remount the form each time the dialog opens so a previous submission's
   // message never greets the next visitor.
@@ -50,6 +51,10 @@ export default function RsvpButton({
       done = true;
       el.close();
       setState("closed");
+      // Browsers restore focus on close(), but not when the dialog opened on
+      // arrival from a link, where nothing had focus. Returning it to this
+      // card's button covers both.
+      trigger.current?.focus();
     };
     el.addEventListener("animationend", finish);
     const fallback = window.setTimeout(finish, 400);
@@ -71,18 +76,23 @@ export default function RsvpButton({
 
   return (
     <>
+      {/* 40px tall; tap-target grows the hit area to 44 without resizing it. */}
       <button
+        ref={trigger}
         type="button"
         onClick={open}
-        className="rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition-colors hover:bg-secondary-accent"
+        aria-haspopup="dialog"
+        className="tap-target relative rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition-colors hover:bg-secondary-accent"
       >
         RSVP
+        <span className="sr-only"> for {name}</span>
       </button>
 
       <dialog
         ref={dialog}
         aria-labelledby={headingId}
         // Clicking the backdrop lands on the dialog itself, never on its content.
+        // Keyboard users close with Escape or the close button instead.
         onClick={(e) => {
           if (e.target === dialog.current) requestClose();
         }}
@@ -101,8 +111,8 @@ export default function RsvpButton({
           <button
             type="button"
             onClick={requestClose}
-            aria-label="Close"
-            className="absolute right-5 top-5 rounded-full p-1.5 text-foreground/70 transition-colors hover:bg-foreground/5 hover:text-foreground"
+            aria-label="Close RSVP form"
+            className="tap-target absolute right-5 top-5 rounded-full p-1.5 text-foreground/70 transition-colors hover:bg-foreground/5 hover:text-foreground"
           >
             <X size={20} aria-hidden="true" />
           </button>

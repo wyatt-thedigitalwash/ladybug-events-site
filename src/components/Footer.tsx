@@ -34,11 +34,23 @@ const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURICom
   `${business.address.street}, ${business.address.city}, ${business.address.state} ${business.address.zip}`,
 )}`;
 
-// Light text needs 70% or more on this ground to clear the contrast minimum.
+/*
+  Light text needs 70% or more on this ground to clear the contrast minimum.
+
+  The column links sit 30px apart (20px of text, 10px of gap), and the
+  ::before stretches each one's hit area to fill that whole row without
+  overlapping its neighbour. A full 44px would overlap, and a tap near an edge
+  would land on the wrong link.
+*/
 const linkClass =
-  "text-sm text-background/80 transition-colors hover:text-background";
+  "relative text-sm text-background/80 transition-colors hover:text-background before:absolute before:inset-x-0 before:-inset-y-[5px]";
 const headingClass =
   "text-xs font-semibold uppercase tracking-[0.14em] text-background/70";
+
+// Announced after the label of every link that leaves in a new tab.
+function NewTabNote() {
+  return <span className="sr-only"> (opens in a new tab)</span>;
+}
 
 export default function Footer() {
   return (
@@ -100,13 +112,14 @@ export default function Footer() {
                     Get directions
                     <ArrowUpRight size={13} aria-hidden="true" />
                   </span>
+                  <NewTabNote />
                 </a>
 
                 {/* The phone is the fastest way to reach a small venue, so it is
                     the one thing in the footer sized to be seen. */}
                 <a
                   href={business.phoneHref}
-                  className="block font-display text-2xl font-semibold tabular-nums text-background transition-colors hover:text-accent"
+                  className="tap-target relative block font-display text-2xl font-semibold tabular-nums text-background transition-colors hover:text-accent"
                 >
                   {business.phone}
                 </a>
@@ -116,10 +129,11 @@ export default function Footer() {
                 href={business.linktree}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-background/25 px-4 py-2 text-sm font-semibold text-background/85 transition-colors hover:border-background/60 hover:text-background"
+                className="tap-target relative inline-flex shrink-0 items-center gap-1.5 rounded-full border border-background/25 px-4 py-2 text-sm font-semibold text-background/85 transition-colors hover:border-background/60 hover:text-background"
               >
                 Linktree
                 <ArrowUpRight size={14} aria-hidden="true" />
+                <NewTabNote />
               </a>
             </div>
           </div>

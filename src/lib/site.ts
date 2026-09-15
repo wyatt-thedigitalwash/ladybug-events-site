@@ -18,24 +18,25 @@ export const business = {
 };
 
 /*
-  Tour booking, handled by Calendly rather than built here.
+  Call booking, handled by Calendly rather than built here.
 
   A booking system owns availability, double-booking prevention, timezones,
   reschedules, cancellations, reminders and calendar sync. Getting any one of
-  those wrong means a tour is lost or two couples arrive at once, and the
-  owners could not change their own hours without a code change.
+  those wrong means a call is missed or double-booked, and the owners could
+  not change their own hours without a code change.
 
-  TO GO LIVE: paste the Calendly scheduling link below. Everything keyed off
-  it appears at that point and stays hidden while it is empty, so there is
-  never a dead "Book a Tour" link on the site.
-  Example: "https://calendly.com/ladybugvenue/venue-tour"
+  Calls are meant to follow an inquiry, so the owners have the date, guest
+  count and package in hand before they pick up. The booking page says so.
+
+  Everything keyed off this link stays hidden while it is empty, so there is
+  never a dead "Schedule a Call" link on the site.
 */
-export const tourBooking = {
-  calendlyUrl: "",
+export const callBooking = {
+  calendlyUrl: "https://calendly.com/events-kdbugs/30min?primary_color=df8cff",
 };
 
-export function isTourBookingEnabled(): boolean {
-  return tourBooking.calendlyUrl.trim().length > 0;
+export function isCallBookingEnabled(): boolean {
+  return callBooking.calendlyUrl.trim().length > 0;
 }
 
 /*

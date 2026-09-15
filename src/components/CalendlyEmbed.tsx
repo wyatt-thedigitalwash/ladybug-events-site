@@ -23,6 +23,7 @@ declare global {
       initInlineWidget: (options: {
         url: string;
         parentElement: HTMLElement;
+        resize?: boolean;
       }) => void;
     };
   }
@@ -47,9 +48,13 @@ export default function CalendlyEmbed({
 
     function render() {
       if (cancelled || !container.current || !window.Calendly) return;
+      // resize: Calendly posts its page height as the visitor moves between
+      // steps and sets it on the container, so the whole scheduler shows
+      // without a scrollbar inside the frame.
       window.Calendly.initInlineWidget({
         url,
         parentElement: container.current,
+        resize: true,
       });
       setStatus("ready");
     }
@@ -93,16 +98,22 @@ export default function CalendlyEmbed({
     <div>
       <div
         ref={container}
-        // Calendly sizes its own iframe; this reserves the space so the page
-        // does not jump when the widget lands.
+        // 700 is only the starting height. Calendly overwrites it with the
+        // real page height once the frame reports in; React leaves it alone
+        // after that because status never changes again.
         style={{ minWidth: 320, height: status === "ready" ? 700 : 0 }}
         className="overflow-hidden rounded-3xl"
       />
 
+      {/* A live region, so a screen reader hears the switch from loading to
+          the call-us fallback rather than being left on "Loading". */}
       {status !== "ready" && (
-        <div className="rounded-3xl border border-dashed border-foreground/20 px-6 py-10 text-center">
+        <div
+          role="status"
+          className="rounded-3xl border border-dashed border-foreground/20 px-6 py-10 text-center"
+        >
           {status === "loading" ? (
-            <p className="text-sm text-foreground/70">Loading the calendar...</p>
+            <p className="text-sm text-foreground/85">Loading the calendar...</p>
           ) : (
             <p className="text-sm leading-6 text-foreground/85">
               The booking calendar didn&apos;t load. Give us a call at{" "}

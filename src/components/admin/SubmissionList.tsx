@@ -66,7 +66,7 @@ function Detail({ label, value }: { label: string; value: string | null }) {
   if (!value) return null;
   return (
     <div>
-      <dt className="text-xs uppercase tracking-wide text-foreground/55">
+      <dt className="text-xs uppercase tracking-wide text-foreground/85">
         {label}
       </dt>
       <dd className="mt-0.5 text-sm text-foreground">{value}</dd>
@@ -81,7 +81,7 @@ export default function SubmissionList({
 }) {
   if (submissions.length === 0) {
     return (
-      <p className="rounded-2xl border border-dashed border-foreground/20 px-6 py-12 text-center text-sm text-foreground/70">
+      <p className="rounded-2xl border border-dashed border-foreground/20 px-6 py-12 text-center text-sm text-foreground/85">
         Nothing here yet. Submissions appear the moment someone sends a form.
       </p>
     );
@@ -104,7 +104,7 @@ export default function SubmissionList({
             </span>
             <time
               dateTime={item.createdAt}
-              className="text-xs tabular-nums text-foreground/55"
+              className="text-xs tabular-nums text-foreground/85"
             >
               {formatReceived(item.createdAt)}
             </time>
@@ -148,7 +148,7 @@ export default function SubmissionList({
 
           {item.notes && (
             <div className="mt-5 rounded-xl bg-tint px-4 py-3">
-              <p className="text-xs uppercase tracking-wide text-foreground/55">
+              <p className="text-xs uppercase tracking-wide text-foreground/85">
                 Notes
               </p>
               <p className="mt-1 whitespace-pre-line text-sm leading-6 text-foreground">

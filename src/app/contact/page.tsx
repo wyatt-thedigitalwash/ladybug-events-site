@@ -1,19 +1,17 @@
 import Link from "next/link";
-import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
 import Ladybug from "@/components/motifs/Ladybug";
 import { EventsIcon, WeddingIcon } from "@/components/OfferingIcons";
-import { business, isTourBookingEnabled } from "@/lib/site";
+import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
+import { business, isCallBookingEnabled } from "@/lib/site";
+import { pageMetadata, seoPages } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Contact",
-  description:
-    "Reach out to The Ladybug Venue in Plant City, FL about a wedding or private event.",
-};
+export const metadata = pageMetadata(seoPages.contact);
 
 export default function ContactPage() {
   return (
     <>
+      <BreadcrumbJsonLd page={seoPages.contact} />
       <PageHero
         bug="right"
         title="Let's Talk About Your Event"
@@ -22,6 +20,7 @@ export default function ContactPage() {
 
       <section
         data-bg="light"
+        aria-label="Inquiry options"
         className="relative overflow-hidden py-20 md:py-24"
       >
         <Ladybug className="pointer-events-none absolute -right-16 -bottom-20 h-72 w-72 -rotate-[20deg] text-foreground opacity-[0.07] md:-right-10 md:-bottom-24 md:h-96 md:w-96" />
@@ -36,7 +35,7 @@ export default function ContactPage() {
             <h2 className="text-xl font-semibold text-foreground">
               I&apos;m Planning a Wedding
             </h2>
-            <p className="mt-3 text-sm text-foreground/70">
+            <p className="mt-3 text-sm text-foreground/85">
               Whole-venue or small all-inclusive packages, tours, and dates.
             </p>
             <span className="mt-4 inline-block text-sm font-semibold text-secondary-accent group-hover:text-ladybug">
@@ -54,7 +53,7 @@ export default function ContactPage() {
             <h2 className="text-xl font-semibold text-foreground">
               I&apos;m Planning an Event
             </h2>
-            <p className="mt-3 text-sm text-foreground/70">
+            <p className="mt-3 text-sm text-foreground/85">
               Birthdays, baby showers, baptisms, and other private events.
             </p>
             <span className="mt-4 inline-block text-sm font-semibold text-secondary-accent group-hover:text-ladybug">
@@ -64,27 +63,27 @@ export default function ContactPage() {
         </div>
 
         {/*
-          Booking a tour is a different action from sending an inquiry, so it
-          sits below the two inquiry cards rather than becoming a third one.
+          A call is the step after an inquiry, so it sits below the two inquiry
+          cards rather than becoming a third one, and its copy says so.
           Hidden entirely until a Calendly link is configured, so the site
-          never shows a "Book a Tour" button that goes nowhere useful.
+          never shows a "Schedule a Call" button that goes nowhere useful.
         */}
-        {isTourBookingEnabled() && (
+        {isCallBookingEnabled() && (
           <div className="relative mx-auto mt-10 max-w-4xl px-6">
             <div className="flex flex-col items-center gap-4 rounded-2xl bg-tint px-6 py-7 text-center sm:flex-row sm:justify-between sm:text-left">
               <div>
                 <h2 className="text-lg font-semibold text-foreground">
-                  Rather just see it first?
+                  Already sent your inquiry?
                 </h2>
                 <p className="mt-1 text-sm text-foreground/85">
-                  Pick a time that suits you and come walk the property.
+                  Pick a time for a call and we&apos;ll talk through the details.
                 </p>
               </div>
               <Link
-                href="/contact/tour"
+                href="/contact/call"
                 className="shrink-0 rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background transition-colors hover:bg-secondary-accent"
               >
-                Book a Tour
+                Schedule a Call
               </Link>
             </div>
           </div>
@@ -103,11 +102,11 @@ export default function ContactPage() {
           </p>
         </div>
 
-        <div className="relative mx-auto mt-16 max-w-4xl px-6 text-center text-sm text-foreground/60">
+        <div className="relative mx-auto mt-16 max-w-4xl px-6 text-center text-sm text-foreground/85">
           Prefer to call?{" "}
           <a
             href={business.phoneHref}
-            className="font-semibold text-secondary-accent"
+            className="tap-target relative font-semibold text-secondary-accent"
           >
             {business.phone}
           </a>

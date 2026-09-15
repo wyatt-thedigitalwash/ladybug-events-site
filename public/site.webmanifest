@@ -1,0 +1,30 @@
+{
+  "name": "The Ladybug Venue",
+  "short_name": "Ladybug Venue",
+  "description": "A family-run event space in Plant City, FL offering wedding packages, private event rentals, and free community programming.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#fefefe",
+  "background_color": "#fefefe",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

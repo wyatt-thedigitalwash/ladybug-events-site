@@ -18,6 +18,10 @@ import {
   communityEvents,
   workoutPhotos,
 } from "@/lib/site";
+import { pageMetadata, seoPages } from "@/lib/seo";
+
+// No breadcrumb here: a trail of one item says nothing.
+export const metadata = pageMetadata(seoPages.home);
 
 /*
   Each card leads with a photograph of the space that offering actually uses.
@@ -83,13 +87,18 @@ export default function Home() {
       <section
         id={HOME_HERO_ID}
         data-bg="dark"
+        aria-labelledby="home-title"
         className="relative flex min-h-svh items-center justify-center overflow-hidden text-center text-white"
       >
         <Image
           src="/venue/Ladybug_Chapel.jpg"
           alt="Inside the Ladybug Venue chapel, with wooden pews lined with white flowers leading to a cross at the front"
           fill
-          priority
+          // The LCP element at every viewport. `preload` replaces the
+          // `priority` prop, deprecated in Next 16. Neither sets
+          // fetchpriority, so it is passed explicitly.
+          preload
+          fetchPriority="high"
           sizes="100vw"
           className="object-cover"
         />
@@ -101,25 +110,32 @@ export default function Home() {
           {/* The logo carries the name, so it stays inside the h1 and its alt
               text is what search engines and screen readers read as the
               heading. */}
-          <h1>
+          <h1 id="home-title">
             <Image
               src="/brand/ladybug-group-logo-light.svg"
               alt={business.name}
               width={5096}
               height={1884}
-              priority
+              // Above the fold, but not the LCP (the photo is). Eager without a
+              // preload, so it does not compete with the photo in the head.
+              loading="eager"
               className="mx-auto h-auto w-full max-w-sm md:max-w-lg"
             />
           </h1>
-          <p className="mt-6 text-lg leading-8 text-white/85">
+          {/* Full white. Sampled across six viewport sizes under the gradient,
+              white at 85% fell to 3.9:1 over the brightest parts of the photo;
+              full white holds 4.6. */}
+          <p className="mt-6 text-lg leading-8 text-white">
             A family-run event space where we bring your events to life,
             from weddings and private celebrations to free programming for
             our community.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            {/* On the gold hover the mauve text is 3.4:1, short of 4.5 for
+                14px type, so the hover darkens it to the same hue at 4.5. */}
             <Link
               href="/contact"
-              className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-accent hover:text-foreground"
+              className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-accent hover:text-[#503e42]"
             >
               Start an Inquiry
             </Link>
@@ -133,13 +149,20 @@ export default function Home() {
         </div>
       </section>
 
-      <section data-bg="light" className="relative py-20 md:py-24">
+      <section
+        data-bg="light"
+        aria-labelledby="what-we-host-title"
+        className="relative py-20 md:py-24"
+      >
         <HiddenLadybug at="top-right" />
         <div className="mx-auto w-full max-w-7xl px-6">
-          <h2 className="text-center text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+          <h2
+            id="what-we-host-title"
+            className="text-center text-3xl font-semibold tracking-tight text-foreground md:text-4xl"
+          >
             What We Host
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-foreground/80">
+          <p className="mx-auto mt-4 max-w-2xl text-center text-foreground/85">
             Choose the option closest to what you&apos;re planning and we&apos;ll
             walk you through pricing, availability, and a tour.
           </p>
@@ -157,7 +180,7 @@ export default function Home() {
                   <h3 className="text-2xl font-semibold text-foreground">
                     {offering.title}
                   </h3>
-                  <p className="mt-3 flex-1 text-base leading-7 text-foreground/70">
+                  <p className="mt-3 flex-1 text-base leading-7 text-foreground/85">
                     {offering.description}
                   </p>
                   <span className="mt-6 text-sm font-semibold text-secondary-accent group-hover:text-ladybug">
@@ -170,13 +193,20 @@ export default function Home() {
         </div>
       </section>
 
-      <section data-bg="light" className="relative py-20 md:py-24">
+      <section
+        data-bg="light"
+        aria-labelledby="community-programming-title"
+        className="relative py-20 md:py-24"
+      >
         <HiddenLadybug at="bottom-left" />
         <div className="relative mx-auto w-full max-w-7xl px-6">
-          <h2 className="text-center text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+          <h2
+            id="community-programming-title"
+            className="text-center text-3xl font-semibold tracking-tight text-foreground md:text-4xl"
+          >
             Free Community Programming
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-foreground/80">
+          <p className="mx-auto mt-4 max-w-2xl text-center text-foreground/85">
             The Ladybug Venue is proud to open its doors to the neighborhood
             with regular, free community events.
           </p>
@@ -195,7 +225,7 @@ export default function Home() {
                         time={event.time}
                       />
                     ) : (
-                      <span className="text-sm text-foreground/60">
+                      <span className="text-sm text-foreground/85">
                         Open to all, no RSVP needed
                       </span>
                     )

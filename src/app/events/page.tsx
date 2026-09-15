@@ -1,11 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Metadata } from "next";
 import { Check } from "lucide-react";
 import PageHero from "@/components/PageHero";
 import CtaBand from "@/components/CtaBand";
 import HiddenLadybug from "@/components/motifs/HiddenLadybug";
 import ShellSpots from "@/components/motifs/ShellSpots";
+import { BreadcrumbJsonLd, ServiceJsonLd } from "@/components/seo/JsonLd";
 import {
   babyShowerPhotos,
   eventPackages,
@@ -13,12 +13,9 @@ import {
   venueAmenities,
   workoutPhotos,
 } from "@/lib/site";
+import { pageMetadata, seoPages } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Events",
-  description:
-    "Private event rentals at The Ladybug Venue in Plant City, FL. Indoor from $500, indoor plus outdoor from $775, for birthdays, baby showers, and family celebrations.",
-};
+export const metadata = pageMetadata(seoPages.events);
 
 /*
   Venue photography. Dimensions are the files' real pixel sizes, which lets
@@ -93,13 +90,19 @@ const babyShowerRow = [
 export default function EventsPage() {
   return (
     <>
+      <ServiceJsonLd service="events" />
+      <BreadcrumbJsonLd page={seoPages.events} />
       <PageHero
         bug="left"
         title="Birthdays, Baby Showers & More"
         description="A simple, affordable rental for the celebrations that matter to you and your family."
       />
 
-      <section data-bg="light" className="pb-20 md:pb-24">
+      <section
+        data-bg="light"
+        aria-label="Rental pricing"
+        className="pb-20 md:pb-24"
+      >
         <div className="mx-auto max-w-6xl px-6">
           <div className="grid gap-6 md:grid-cols-2 lg:gap-8">
             {eventPackages.map((pkg, i) => (
@@ -147,13 +150,20 @@ export default function EventsPage() {
         </div>
       </section>
 
-      <section data-bg="light" className="relative pb-20 md:pb-24">
+      <section
+        data-bg="light"
+        aria-labelledby="included-title"
+        className="relative pb-20 md:pb-24"
+      >
         <HiddenLadybug at="top-left" />
         <div className="mx-auto max-w-6xl px-6">
           <div className="rounded-3xl bg-tint p-8 md:p-10">
             <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] md:items-center md:gap-12">
               <div>
-                <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+                <h2
+                  id="included-title"
+                  className="text-2xl font-semibold tracking-tight text-foreground"
+                >
                   Included With Every Rental
                 </h2>
                 <p className="mt-3 text-base leading-7 text-foreground/85">
@@ -177,9 +187,16 @@ export default function EventsPage() {
         </div>
       </section>
 
-      <section data-bg="light" className="pb-20 md:pb-24">
+      <section
+        data-bg="light"
+        aria-labelledby="spaces-title"
+        className="pb-20 md:pb-24"
+      >
         <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-center text-3xl font-semibold tracking-tight text-foreground">
+          <h2
+            id="spaces-title"
+            className="text-center text-3xl font-semibold tracking-tight text-foreground"
+          >
             The Spaces
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-base leading-7 text-foreground/85">
@@ -211,9 +228,16 @@ export default function EventsPage() {
         </div>
       </section>
 
-      <section data-bg="light" className="pb-20 md:pb-24">
+      <section
+        data-bg="light"
+        aria-labelledby="baby-shower-title"
+        className="pb-20 md:pb-24"
+      >
         <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-center text-3xl font-semibold tracking-tight text-foreground">
+          <h2
+            id="baby-shower-title"
+            className="text-center text-3xl font-semibold tracking-tight text-foreground"
+          >
             A Baby Shower Here
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-base leading-7 text-foreground/85">
@@ -257,9 +281,16 @@ export default function EventsPage() {
         </div>
       </section>
 
-      <section data-bg="light" className="pb-20 md:pb-24">
+      <section
+        data-bg="light"
+        aria-labelledby="in-use-title"
+        className="pb-20 md:pb-24"
+      >
         <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-center text-3xl font-semibold tracking-tight text-foreground">
+          <h2
+            id="in-use-title"
+            className="text-center text-3xl font-semibold tracking-tight text-foreground"
+          >
             The Space in Use
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-base leading-7 text-foreground/85">
@@ -318,10 +349,14 @@ export default function EventsPage() {
         </div>
       </section>
 
-      <section data-bg="light" className="pb-20 md:pb-24">
+      <section
+        data-bg="light"
+        aria-labelledby="led-sign-title"
+        className="pb-20 md:pb-24"
+      >
         <div className="mx-auto max-w-3xl px-6">
           <div className="rounded-3xl bg-surface-slate px-8 py-7 text-center">
-            <h2 className="text-xl font-semibold text-foreground">
+            <h2 id="led-sign-title" className="text-xl font-semibold text-foreground">
               Add an LED sign, ${ledSignRental.price}
             </h2>
             <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-foreground/85">

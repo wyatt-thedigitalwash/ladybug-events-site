@@ -29,11 +29,9 @@ export type BandPhoto = {
 
 export default function ShellBand({
   photo,
-  priority = false,
   children,
 }: {
   photo: BandPhoto;
-  priority?: boolean;
   children: ReactNode;
 }) {
   return (
@@ -48,7 +46,7 @@ export default function ShellBand({
           src={photo.src}
           alt={photo.alt}
           fill
-          priority={priority}
+          // Lazy by default: these cards sit below the full-height home hero.
           sizes="(min-width: 1280px) 600px, (min-width: 640px) 46vw, 90vw"
           // Set here rather than as a utility class: the value varies per
           // photo, and Tailwind cannot see a class name built at runtime.

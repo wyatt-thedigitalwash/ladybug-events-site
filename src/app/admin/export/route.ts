@@ -48,7 +48,10 @@ function csvCell(value: string | number | null): string {
 
 export async function GET(request: Request) {
   if (!(await isSignedIn())) {
-    return new Response("Not found", { status: 404 });
+    return Response.json(
+      { error: "Not found" },
+      { status: 404, headers: { "Cache-Control": "no-store" } }
+    );
   }
 
   // Mirrors the filter the admin page is showing, so the download matches
@@ -64,7 +67,18 @@ export async function GET(request: Request) {
       ? requestedEvent
       : undefined;
 
-  const submissions = await listSubmissions({ kind, event });
+  // A database failure is logged here and answered with a generic message, so
+  // neither the driver's error nor a stack trace reaches the browser.
+  let submissions: Awaited<ReturnType<typeof listSubmissions>>;
+  try {
+    submissions = await listSubmissions({ kind, event });
+  } catch (error) {
+    console.error("CSV export failed", error);
+    return Response.json(
+      { error: "The export could not be created. Please try again." },
+      { status: 500, headers: { "Cache-Control": "no-store" } }
+    );
+  }
 
   const rows = submissions.map((item) =>
     [

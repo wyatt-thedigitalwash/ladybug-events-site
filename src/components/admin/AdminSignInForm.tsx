@@ -4,11 +4,15 @@ import { useActionState } from "react";
 import { signInAction } from "@/app/admin/actions";
 import { initialFormState } from "@/lib/types";
 
+const MESSAGE_ID = "admin-sign-in-message";
+
 export default function AdminSignInForm() {
   const [state, formAction, pending] = useActionState(
     signInAction,
     initialFormState
   );
+  // A sign-in has one field, so any rejection is about the password.
+  const rejected = state.status === "error";
 
   return (
     <form action={formAction} className="space-y-4">
@@ -25,6 +29,9 @@ export default function AdminSignInForm() {
           type="password"
           autoComplete="current-password"
           required
+          aria-required
+          aria-invalid={rejected || undefined}
+          aria-describedby={rejected ? MESSAGE_ID : undefined}
           className="mt-1 w-full rounded-lg border border-foreground/20 bg-background px-3 py-2 text-foreground"
         />
       </div>
@@ -37,8 +44,8 @@ export default function AdminSignInForm() {
         {pending ? "Checking..." : "Sign In"}
       </button>
 
-      {state.status === "error" && (
-        <p role="status" className="text-sm text-ladybug">
+      {rejected && (
+        <p id={MESSAGE_ID} role="alert" className="text-sm text-ladybug">
           {state.message}
         </p>
       )}

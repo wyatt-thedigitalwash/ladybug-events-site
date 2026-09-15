@@ -39,7 +39,11 @@ function isRsvpEvent(value: unknown): value is string {
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <section data-bg="light" className="py-16 md:py-20">
+    <section
+      data-bg="light"
+      aria-label="Submissions"
+      className="py-16 md:py-20"
+    >
       <div className="mx-auto max-w-4xl px-6">{children}</div>
     </section>
   );
@@ -53,14 +57,14 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
           <h1 className="text-center text-3xl font-semibold tracking-tight text-foreground">
             Submissions
           </h1>
-          <p className="mt-3 text-center text-sm text-foreground/70">
+          <p className="mt-3 text-center text-sm text-foreground/85">
             RSVPs and inquiries from the website.
           </p>
           <div className="mt-8 rounded-2xl border border-foreground/15 bg-background p-8">
             <AdminSignInForm />
           </div>
           {!isAdminConfigured() && (
-            <p className="mt-6 rounded-2xl border border-dashed border-foreground/20 px-5 py-4 text-center text-sm text-foreground/70">
+            <p className="mt-6 rounded-2xl border border-dashed border-foreground/20 px-5 py-4 text-center text-sm text-foreground/85">
               No admin password is set for this environment. Add
               LADYBUG_ADMIN_PASSWORD and redeploy.
             </p>
@@ -92,7 +96,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
           <h1 className="text-3xl font-semibold tracking-tight text-foreground">
             Submissions
           </h1>
-          <p className="mt-2 text-sm text-foreground/70">
+          <p className="mt-2 text-sm text-foreground/85">
             {total === 0
               ? "Nothing received yet."
               : `${total} total, newest first.`}
@@ -101,7 +105,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
         <form action={signOutAction}>
           <button
             type="submit"
-            className="flex items-center gap-2 rounded-full border border-foreground/20 px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:border-ladybug/50"
+            className="tap-target relative flex items-center gap-2 rounded-full border border-foreground/20 px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:border-ladybug/50"
           >
             <LogOut size={15} aria-hidden="true" />
             Sign out
@@ -149,7 +153,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
 
         <a
           href={query ? `/admin/export?${query}` : "/admin/export"}
-          className="ml-auto flex items-center gap-2 rounded-full border border-foreground/20 px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:border-ladybug/50"
+          className="tap-target relative ml-auto flex items-center gap-2 rounded-full border border-foreground/20 px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:border-ladybug/50"
         >
           <Download size={15} aria-hidden="true" />
           CSV
@@ -178,14 +182,14 @@ function FilterLink({
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+      className={`tap-target relative rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
         active
           ? "bg-foreground text-background"
           : "border border-foreground/20 text-foreground hover:border-ladybug/50"
       }`}
     >
       {label}
-      <span className={active ? "text-background/70" : "text-foreground/55"}>
+      <span className={active ? "text-background/70" : "text-foreground/85"}>
         {" "}
         {count}
       </span>

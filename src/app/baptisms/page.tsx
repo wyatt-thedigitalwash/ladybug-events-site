@@ -1,17 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Metadata } from "next";
 import { Check } from "lucide-react";
 import PageHero from "@/components/PageHero";
 import CtaBand from "@/components/CtaBand";
 import HiddenLadybug from "@/components/motifs/HiddenLadybug";
+import { BreadcrumbJsonLd, ServiceJsonLd } from "@/components/seo/JsonLd";
 import { eventPricing, venueAmenities } from "@/lib/site";
+import { pageMetadata, seoPages } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Baptisms",
-  description:
-    "Host a baptism at The Ladybug Venue in Plant City, FL. A tiled baptismal pool, a chapel for the service and a hall for the reception, from $500.",
-};
+export const metadata = pageMetadata(seoPages.baptisms);
 
 const steps = [
   {
@@ -31,25 +28,38 @@ const steps = [
 export default function BaptismsPage() {
   return (
     <>
+      <ServiceJsonLd service="baptisms" />
+      <BreadcrumbJsonLd page={seoPages.baptisms} />
       <PageHero
         bug="right"
         title="A Space to Celebrate the Occasion"
         description="Whether it's an intimate gathering or a larger celebration with family and friends, our venue can host your baptism reception."
       />
 
-      <section data-bg="light" className="pb-20 md:pb-24">
+      <section
+        data-bg="light"
+        aria-labelledby="chapel-title"
+        className="pb-20 md:pb-24"
+      >
         <div className="mx-auto grid max-w-5xl items-center gap-10 px-6 md:grid-cols-2">
           <div className="relative aspect-[4/3] overflow-hidden rounded-3xl">
             <Image
               src="/venue/Ladybug_Chapel.jpg"
               alt="Inside the chapel, with wooden pews lined with white flowers leading to a cross at the front"
               fill
+              // First thing under the hero and the largest element in the
+              // first viewport, so it is the LCP.
+              preload
+              fetchPriority="high"
               sizes="(min-width: 768px) 40vw, 90vw"
               className="object-cover"
             />
           </div>
           <div>
-            <h2 className="text-3xl font-semibold tracking-tight text-foreground">
+            <h2
+              id="chapel-title"
+              className="text-3xl font-semibold tracking-tight text-foreground"
+            >
               A Chapel and a Hall, in One Place
             </h2>
             <p className="mt-4 text-base leading-7 text-foreground/85">
@@ -66,10 +76,17 @@ export default function BaptismsPage() {
         </div>
       </section>
 
-      <section data-bg="light" className="pb-20 md:pb-24">
+      <section
+        data-bg="light"
+        aria-labelledby="pool-title"
+        className="pb-20 md:pb-24"
+      >
         <div className="mx-auto grid max-w-5xl items-center gap-10 px-6 md:grid-cols-2">
           <div>
-            <h2 className="text-3xl font-semibold tracking-tight text-foreground">
+            <h2
+              id="pool-title"
+              className="text-3xl font-semibold tracking-tight text-foreground"
+            >
               The Baptismal Pool
             </h2>
             <p className="mt-4 text-base leading-7 text-foreground/85">
@@ -95,10 +112,17 @@ export default function BaptismsPage() {
         </div>
       </section>
 
-      <section data-bg="light" className="relative pb-20 md:pb-24">
+      <section
+        data-bg="light"
+        aria-labelledby="day-title"
+        className="relative pb-20 md:pb-24"
+      >
         <HiddenLadybug at="bottom-right" />
         <div className="mx-auto max-w-5xl px-6">
-          <h2 className="text-center text-3xl font-semibold tracking-tight text-foreground">
+          <h2
+            id="day-title"
+            className="text-center text-3xl font-semibold tracking-tight text-foreground"
+          >
             How the Day Works
           </h2>
           <div className="mt-12 grid gap-6 md:grid-cols-3 lg:gap-8">
@@ -119,12 +143,16 @@ export default function BaptismsPage() {
         </div>
       </section>
 
-      <section data-bg="light" className="pb-20 md:pb-24">
+      <section
+        data-bg="light"
+        aria-labelledby="cost-title"
+        className="pb-20 md:pb-24"
+      >
         <div className="mx-auto max-w-5xl px-6">
           <div className="rounded-3xl bg-tint p-8 md:p-10">
             <div className="grid gap-8 md:grid-cols-2 md:items-center">
               <div>
-                <h2 className="text-2xl font-semibold text-foreground">
+                <h2 id="cost-title" className="text-2xl font-semibold text-foreground">
                   What It Costs
                 </h2>
                 <p className="mt-3 text-base leading-7 text-foreground/85">
@@ -141,7 +169,7 @@ export default function BaptismsPage() {
                 </p>
                 <Link
                   href="/events"
-                  className="mt-5 inline-block text-sm font-semibold text-secondary-accent hover:text-ladybug"
+                  className="tap-target relative mt-5 inline-block text-sm font-semibold text-secondary-accent hover:text-ladybug"
                 >
                   See what each rental includes &rarr;
                 </Link>

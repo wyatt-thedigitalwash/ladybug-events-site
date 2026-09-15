@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { isTourBookingEnabled, siteUrl } from '@/lib/site';
+import { isCallBookingEnabled, siteUrl } from '@/lib/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = siteUrl;
@@ -15,9 +15,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/contact/event', priority: 0.7 },
     // Only submitted once it can actually take a booking. Listing a page that
     // just says "coming soon" invites Google to index it as the answer for
-    // "ladybug venue tour".
-    ...(isTourBookingEnabled()
-      ? [{ path: '/contact/tour', priority: 0.8 }]
+    // "ladybug venue call".
+    ...(isCallBookingEnabled()
+      ? [{ path: '/contact/call', priority: 0.8 }]
       : []),
   ];
 

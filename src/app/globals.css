@@ -24,7 +24,6 @@
   --color-surface-slate: var(--surface-slate);
   --color-surface-slate-strong: var(--surface-slate-strong);
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
   --font-display: var(--font-playfair), Georgia, "Times New Roman", serif;
 }
 
@@ -131,5 +130,59 @@ dialog[data-state="closing"]::backdrop {
   dialog[data-state],
   dialog[data-state]::backdrop {
     animation-duration: 1ms;
+  }
+}
+
+/*
+  Focus. One visible ring for every focusable element, drawn for keyboard
+  focus only. Slate clears the 3:1 non-text minimum on every light ground the
+  site uses (5.2 on the page, 4.6 on the tint), but drops to 1.4 on the mauve
+  footer, so dark surfaces swap to the page white (7.3 there). Dark surfaces
+  are the footer, any section marked data-bg="dark" (the home hero), and the
+  navbar while it is transparent over that hero (data-surface="dark").
+*/
+:focus-visible {
+  outline: 2px solid var(--secondary-accent);
+  outline-offset: 2px;
+}
+
+footer :focus-visible,
+[data-bg="dark"] :focus-visible,
+[data-surface="dark"] :focus-visible {
+  outline-color: var(--background);
+}
+
+/* The skip link's target. It takes focus so the next Tab and a screen reader
+   start from the content, but it is not a control, so it draws no ring. */
+#main-content:focus {
+  outline: none;
+}
+
+/*
+  Tap target. Grows a control's hit area to at least 44 by 44 px without
+  changing how it looks or the layout around it. The element needs a position
+  of its own (relative or absolute) for the area to anchor to. That is left to
+  the element so this cannot override one that is already absolute.
+*/
+@utility tap-target {
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

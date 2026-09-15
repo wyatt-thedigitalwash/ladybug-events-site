@@ -16,10 +16,14 @@ const COOKIE = "ladybug_admin";
 const TOKEN_SUBJECT = "ladybug-admin-v1";
 const MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
+function tokenFor(password: string): string {
+  return createHmac("sha256", password).update(TOKEN_SUBJECT).digest("hex");
+}
+
 function expectedToken(): string | null {
   const password = process.env.LADYBUG_ADMIN_PASSWORD;
   if (!password) return null;
-  return createHmac("sha256", password).update(TOKEN_SUBJECT).digest("hex");
+  return tokenFor(password);
 }
 
 export function isAdminConfigured(): boolean {
@@ -30,8 +34,8 @@ function matches(a: string, b: string): boolean {
   const left = Buffer.from(a);
   const right = Buffer.from(b);
   // timingSafeEqual throws on a length mismatch, so that is checked first. The
-  // two values here are both fixed-length hex digests, so the early return
-  // leaks nothing about the secret.
+  // expected side is always a fixed-length hex digest, never the password, so
+  // the early return reveals only the digest length, which is public.
   return left.length === right.length && timingSafeEqual(left, right);
 }
 
@@ -44,10 +48,12 @@ export async function isSignedIn(): Promise<boolean> {
 }
 
 export async function signIn(password: string): Promise<boolean> {
-  const expected = process.env.LADYBUG_ADMIN_PASSWORD;
   const token = expectedToken();
-  if (!expected || !token) return false;
-  if (!matches(password, expected)) return false;
+  if (!token) return false;
+  // Compared as digests, not as raw strings. Comparing the password directly
+  // would return early on a length mismatch and leak the password's length
+  // through response timing.
+  if (!matches(tokenFor(password), token)) return false;
 
   (await cookies()).set(COOKIE, token, {
     httpOnly: true,

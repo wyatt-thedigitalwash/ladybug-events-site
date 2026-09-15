@@ -2,6 +2,9 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import Ladybug from "./motifs/Ladybug";
 
+// One band per page, so a fixed id is unique.
+const TITLE_ID = "cta-title";
+
 /*
   Soft tinted call-to-action band with a large ladybug watermark cropped into
   the bottom-right corner.
@@ -20,6 +23,9 @@ export default function CtaBand({
   return (
     <section
       data-bg="tint"
+      // Named by its heading, or by the action when it has none.
+      aria-labelledby={title ? TITLE_ID : undefined}
+      aria-label={title ? undefined : cta}
       className="relative overflow-hidden bg-tint py-20 text-center md:py-24"
     >
       <Ladybug
@@ -27,11 +33,12 @@ export default function CtaBand({
       />
       <div className="relative mx-auto max-w-2xl px-6">
         {title && (
-          <h2 className="text-3xl font-semibold tracking-tight text-foreground">
+          <h2 id={TITLE_ID} className="text-3xl font-semibold tracking-tight text-foreground">
             {title}
           </h2>
         )}
-        <p className={`${title ? "mt-4" : ""} text-foreground/75`}>{children}</p>
+        {/* 85% is the lowest step that clears 4.5:1 on the tint (75% was 3.6). */}
+        <p className={`${title ? "mt-4" : ""} text-foreground/85`}>{children}</p>
         <Link
           href={href}
           className="mt-8 inline-block rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background transition-colors hover:bg-secondary-accent"

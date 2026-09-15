@@ -1,20 +1,22 @@
 import Image from "next/image";
-import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
+import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
 import { aboutCopy } from "@/lib/site";
+import { pageMetadata, seoPages } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "About",
-  description:
-    "Meet the sisters behind The Ladybug Venue, a family-run event space in Plant City, FL.",
-};
+export const metadata = pageMetadata(seoPages.about);
 
 export default function AboutPage() {
   return (
     <>
+      <BreadcrumbJsonLd page={seoPages.about} />
       <PageHero bug="left" title="A Family-Run Venue" />
 
-      <section data-bg="light" className="py-20 md:py-24">
+      <section
+        data-bg="light"
+        aria-label="About the venue"
+        className="py-20 md:py-24"
+      >
         <div className="mx-auto grid max-w-5xl gap-12 px-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] md:items-start">
           {/* The copy runs to four full paragraphs, so the photo follows it down
               the page instead of sitting above a column of empty space. */}
@@ -24,6 +26,10 @@ export default function AboutPage() {
               alt="The four sisters who run the venue, standing together in winter coats beside a mountain lake"
               width={1600}
               height={1200}
+              // Directly under a title-only hero, so it is the LCP element on
+              // phone and desktop alike.
+              preload
+              fetchPriority="high"
               sizes="(min-width: 768px) 40vw, 90vw"
               className="h-auto w-full"
             />

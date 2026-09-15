@@ -98,13 +98,14 @@ Beyond contact details and date, the form asks the three things the owners need 
 - Storage is Neon Postgres over `@neondatabase/serverless`, one append-only `submissions` table covering all three form kinds. One table keeps the admin list, the CSV export and the storage layer simple; three would triple all of them to save some null columns. The schema is created on first use and memoized, rather than through a migration runner.
 - The SQL has not been run against a live database yet. There was no local Postgres or Docker available, and the Neon HTTP driver cannot talk to one anyway, so the first real exercise of it is the first submission after DATABASE_URL is set.
 
-## Tour Booking
-Handled by Calendly, not built here. A booking system owns availability, double-booking prevention, timezones, reschedules, cancellations, reminders and calendar sync; getting any one wrong loses a tour or puts two couples on the doorstep at once, and a hand-rolled one would mean the owners cannot change their own hours without a code change.
-- The link lives in `tourBooking.calendlyUrl` in src/lib/site.ts. Paste it there and everything keyed off it appears: the `/contact/tour` scheduler, the "Book a Tour" band on Contact, and the sitemap entry.
-- While it is empty, none of that renders. `/contact/tour` still exists and shows a call-us fallback, so any link to it is never broken, but nothing on the site points there. The sitemap omits it too, since a "coming soon" page indexed as the answer for "ladybug venue tour" is worse than no page.
-- The Calendly script loads on `/contact/tour` only, not through the app shell, so the Performance audit does not find a third-party script on every route.
+## Call Booking
+Handled by Calendly, not built here. A booking system owns availability, double-booking prevention, timezones, reschedules, cancellations, reminders and calendar sync; getting any one wrong means a missed or double-booked call, and a hand-rolled one would mean the owners cannot change their own hours without a code change.
+- Client supplied the link 2026-09-15: a 30-minute call, `https://calendly.com/events-kdbugs/30min?primary_color=df8cff`. It lives in `callBooking.calendlyUrl` in src/lib/site.ts. This was scaffolded as tour booking at `/contact/tour`; it was renamed to `/contact/call` once the link turned out to be for a call.
+- A call is the step AFTER an inquiry, per the client. `/contact/call` shows a note above the calendar asking visitors to send a wedding or event inquiry first, with links to both forms. The Contact page band reads "Already sent your inquiry?", and both inquiry forms link to the call page in their success message.
+- If the link is ever cleared, none of that renders. `/contact/call` still exists and shows a call-us fallback, and the sitemap omits it.
+- The Calendly script loads on `/contact/call` only, not through the app shell, so the Performance audit does not find a third-party script on every route.
 - The embed has a visible fallback. If the script is blocked, offline or slow, the page says to call rather than showing an empty box, because a booking widget that silently fails to render just looks broken.
-- Client is finalizing the standing tour schedule with the owners the week of 2026-09-15.
+- Tours are still offered, just not booked online: the wedding inquiry form asks for tour availability.
 
 ## Admin Submissions Page
 `/admin` lists every submission, with a CSV export at `/admin/export`.
@@ -268,7 +269,7 @@ Client's guidance on both the inquiry form and RSVP system: no existing system t
 ### Blocking Items for Launch
 - Logo file not yet delivered — also blocks font/typography decisions
 - LADYBUG_FROM_EMAIL must be set in Vercel to an address on thedigitalwash.com. Without it the sender falls back to `onboarding@resend.dev`, which only delivers to the Resend account's own address, and the owners are never notified.
-- LADYBUG_ADMIN_PASSWORD is `LadyBug123!` (client's choice). It guards submitter names, emails and phone numbers, and the pattern is a common one; worth revisiting before launch.
+- LADYBUG_ADMIN_PASSWORD must be ROTATED before launch. The previous value was written into this file and committed to a public GitHub repo, so treat it as known. Set the new one only in Vercel and .env.local, never in a tracked file. It guards submitter names, emails and phone numbers; sign-in is rate limited (5 failures per 15 minutes per IP, per instance), which slows guessing but does not replace a strong password.
 - Watch for "Resend rejected the notification" in the Vercel function logs. That is what a rejected send looks like; the form still reports success to the visitor, because the row was stored regardless.
 - Hours follow-up: client's "Yes" answer to whether other recurring hours exist or hours change seasonally needs a clarifying re-ask
 - GBP is managed by a third party (client's friend), not the client — confirm if the site needs anything from it that requires that person's involvement

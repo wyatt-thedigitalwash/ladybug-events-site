@@ -1,30 +1,33 @@
 import Image from "next/image";
 import HiddenLadybug from "@/components/motifs/HiddenLadybug";
-import type { Metadata } from "next";
 import { Check } from "lucide-react";
 import PageHero from "@/components/PageHero";
 import CtaBand from "@/components/CtaBand";
 import ShellSpots from "@/components/motifs/ShellSpots";
+import { BreadcrumbJsonLd, ServiceJsonLd } from "@/components/seo/JsonLd";
 import { weddingGuestRange, weddingPackages } from "@/lib/site";
+import { pageMetadata, seoPages } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Weddings",
-  description:
-    "Intimate weddings in Plant City, FL. Venue-only rental starting at $1,650 and all-inclusive packages starting at $3,000, for 30 to 100 guests.",
-};
+export const metadata = pageMetadata(seoPages.weddings);
 
 const priceFormat = new Intl.NumberFormat("en-US");
 
 export default function WeddingsPage() {
   return (
     <>
+      <ServiceJsonLd service="weddings" />
+      <BreadcrumbJsonLd page={seoPages.weddings} />
       <PageHero
         bug="bottom-right"
         title="Your Wedding Day, Your Way"
         description={`Intimate weddings for ${weddingGuestRange}, indoors and out. Rent the venue on its own, or let us handle the essentials with an all-inclusive package.`}
       />
 
-      <section data-bg="light" className="py-20 md:py-24">
+      <section
+        data-bg="light"
+        aria-label="Wedding packages"
+        className="py-20 md:py-24"
+      >
         <div className="mx-auto max-w-6xl px-6">
           <div className="grid gap-6 md:grid-cols-2 lg:gap-8">
             {weddingPackages.map((pkg, i) => (
@@ -127,11 +130,18 @@ export default function WeddingsPage() {
         </div>
       </section>
 
-      <section data-bg="light" className="relative pb-20 md:pb-24">
+      <section
+        data-bg="light"
+        aria-labelledby="all-inclusive-title"
+        className="relative pb-20 md:pb-24"
+      >
         <HiddenLadybug at="left" />
         <div className="mx-auto max-w-3xl px-6">
           <div className="rounded-3xl bg-tint p-8 text-center md:p-10">
-            <h2 className="text-2xl font-semibold text-foreground">
+            <h2
+              id="all-inclusive-title"
+              className="text-2xl font-semibold text-foreground"
+            >
               Why Choose an All-Inclusive Wedding?
             </h2>
             <p className="mt-4 text-base leading-7 text-foreground/85">

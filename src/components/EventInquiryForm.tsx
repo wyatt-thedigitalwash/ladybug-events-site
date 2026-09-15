@@ -1,12 +1,20 @@
 "use client";
 
 import { useActionState } from "react";
+import Link from "next/link";
+import FormMessage from "./FormMessage";
+import HoneypotField from "./HoneypotField";
 import { submitEventInquiry } from "@/lib/actions";
+import { requiredField } from "@/lib/form-a11y";
+import { MAX_LENGTH } from "@/lib/form-limits";
+import { isCallBookingEnabled } from "@/lib/site";
 import { initialFormState } from "@/lib/types";
 
 const inputClass =
   "mt-1 w-full rounded-lg border border-foreground/20 bg-background px-3 py-2 text-foreground";
 const labelClass = "block text-sm font-medium text-foreground";
+
+const MESSAGE_ID = "event-inquiry-message";
 
 export default function EventInquiryForm() {
   const [state, formAction, pending] = useActionState(
@@ -23,6 +31,9 @@ export default function EventInquiryForm() {
     first option and silently discards what the visitor picked.
   */
   const prior = state.values ?? {};
+  // aria-required, plus aria-invalid and the message as its description when
+  // the last rejection named this field.
+  const field = (name: string) => requiredField(state, name, MESSAGE_ID);
 
   return (
     <form action={formAction} className="space-y-5">
@@ -36,7 +47,9 @@ export default function EventInquiryForm() {
             name="name"
             defaultValue={prior.name}
             type="text"
+            maxLength={MAX_LENGTH.name}
             required
+            {...field("name")}
             className={inputClass}
           />
         </div>
@@ -49,7 +62,9 @@ export default function EventInquiryForm() {
             name="phone"
             defaultValue={prior.phone}
             type="tel"
+            maxLength={MAX_LENGTH.phone}
             required
+            {...field("phone")}
             className={inputClass}
           />
         </div>
@@ -64,7 +79,9 @@ export default function EventInquiryForm() {
           name="email"
           defaultValue={prior.email}
           type="email"
+          maxLength={MAX_LENGTH.email}
           required
+          {...field("email")}
           className={inputClass}
         />
       </div>
@@ -80,6 +97,7 @@ export default function EventInquiryForm() {
             name="eventType"
             defaultValue={prior.eventType}
             required
+            {...field("eventType")}
             className={inputClass}
           >
             <option value="Birthday">Birthday</option>
@@ -98,6 +116,7 @@ export default function EventInquiryForm() {
             defaultValue={prior.eventDate}
             type="date"
             required
+            {...field("eventDate")}
             className={inputClass}
           />
         </div>
@@ -113,6 +132,7 @@ export default function EventInquiryForm() {
           name="space"
           defaultValue={prior.space}
           required
+          {...field("space")}
           className={inputClass}
         >
           <option value="Indoor Only">Indoor Only ($500)</option>
@@ -130,9 +150,12 @@ export default function EventInquiryForm() {
           name="notes"
           defaultValue={prior.notes}
           rows={4}
+          maxLength={MAX_LENGTH.notes}
           className={inputClass}
         />
       </div>
+
+      <HoneypotField id="event-inquiry-website" />
 
       <button
         type="submit"
@@ -142,18 +165,18 @@ export default function EventInquiryForm() {
         {pending ? "Sending..." : "Send Event Inquiry"}
       </button>
 
-      {state.status !== "idle" && (
-        <p
-          role="status"
-          className={`text-sm ${
-            state.status === "success"
-              ? "text-secondary-accent"
-              : "text-red-600"
-          }`}
-        >
-          {state.message}
-        </p>
-      )}
+      <FormMessage id={MESSAGE_ID} state={state}>
+        {state.status === "success" && isCallBookingEnabled() && (
+          <>
+            {" "}
+            Next,{" "}
+            <Link href="/contact/call" className="font-semibold underline hover:text-ladybug">
+              schedule a call
+            </Link>{" "}
+            to talk it through.
+          </>
+        )}
+      </FormMessage>
     </form>
   );
 }

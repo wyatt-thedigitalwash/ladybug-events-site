@@ -1,13 +1,24 @@
 "use client";
 
 import { useActionState } from "react";
+import Link from "next/link";
+import FormMessage from "./FormMessage";
+import HoneypotField from "./HoneypotField";
 import { submitWeddingInquiry } from "@/lib/actions";
+import { requiredField } from "@/lib/form-a11y";
+import { MAX_LENGTH } from "@/lib/form-limits";
 import { initialFormState } from "@/lib/types";
-import { weddingGuestRange, weddingPackages } from "@/lib/site";
+import {
+  isCallBookingEnabled,
+  weddingGuestRange,
+  weddingPackages,
+} from "@/lib/site";
 
 const inputClass =
   "mt-1 w-full rounded-lg border border-foreground/20 bg-background px-3 py-2 text-foreground";
 const labelClass = "block text-sm font-medium text-foreground";
+
+const MESSAGE_ID = "wedding-inquiry-message";
 
 export default function WeddingInquiryForm() {
   const [state, formAction, pending] = useActionState(
@@ -17,6 +28,10 @@ export default function WeddingInquiryForm() {
   // Refilled from the rejected submission. React resets the form once the
   // action resolves, and the reset restores each field to its defaultValue.
   const prior = state.values ?? {};
+  // aria-required, plus aria-invalid and the message as its description when
+  // the last rejection named this field.
+  const field = (name: string, hintId?: string) =>
+    requiredField(state, name, MESSAGE_ID, hintId);
 
   return (
     <form action={formAction} className="space-y-5">
@@ -30,7 +45,9 @@ export default function WeddingInquiryForm() {
             name="name"
             defaultValue={prior.name}
             type="text"
+            maxLength={MAX_LENGTH.name}
             required
+            {...field("name")}
             className={inputClass}
           />
         </div>
@@ -43,7 +60,9 @@ export default function WeddingInquiryForm() {
             name="phone"
             defaultValue={prior.phone}
             type="tel"
+            maxLength={MAX_LENGTH.phone}
             required
+            {...field("phone")}
             className={inputClass}
           />
         </div>
@@ -58,7 +77,9 @@ export default function WeddingInquiryForm() {
           name="email"
           defaultValue={prior.email}
           type="email"
+          maxLength={MAX_LENGTH.email}
           required
+          {...field("email")}
           className={inputClass}
         />
       </div>
@@ -74,6 +95,7 @@ export default function WeddingInquiryForm() {
             defaultValue={prior.eventDate}
             type="date"
             required
+            {...field("eventDate")}
             className={inputClass}
           />
         </div>
@@ -89,10 +111,10 @@ export default function WeddingInquiryForm() {
             min={1}
             max={500}
             required
-            aria-describedby="guests-hint"
+            {...field("guests", "guests-hint")}
             className={inputClass}
           />
-          <p id="guests-hint" className="mt-1 text-xs text-foreground/60">
+          <p id="guests-hint" className="mt-1 text-xs text-foreground/85">
             We host {weddingGuestRange}. An estimate is fine.
           </p>
         </div>
@@ -125,6 +147,7 @@ export default function WeddingInquiryForm() {
           name="packageName"
           defaultValue={prior.packageName}
           required
+          {...field("packageName")}
           className={inputClass}
         >
           {/* Driven by the package list so the wording cannot drift from what
@@ -151,6 +174,7 @@ export default function WeddingInquiryForm() {
             name="space"
             defaultValue={prior.space}
             required
+            {...field("space")}
             className={inputClass}
           >
             <option value="Indoor & Outdoor">Indoor &amp; Outdoor</option>
@@ -168,6 +192,7 @@ export default function WeddingInquiryForm() {
             name="tour"
             defaultValue={prior.tour}
             required
+            {...field("tour")}
             className={inputClass}
           >
             <option value="Yes, weekdays">Yes, weekdays</option>
@@ -178,12 +203,12 @@ export default function WeddingInquiryForm() {
         </div>
       </div>
 
-      <fieldset>
+      <fieldset aria-describedby="hours-hint">
         <legend className={labelClass}>
           Hours You&apos;d Need the Venue{" "}
-          <span className="font-normal text-foreground/60">(optional)</span>
+          <span className="font-normal text-foreground/85">(optional)</span>
         </legend>
-        <p className="mt-1 text-xs text-foreground/60">
+        <p id="hours-hint" className="mt-1 text-xs text-foreground/85">
           Access runs 8:00 AM to 11:00 PM. Leave blank if you&apos;re not sure
           yet.
         </p>
@@ -197,7 +222,6 @@ export default function WeddingInquiryForm() {
               name="startTime"
               defaultValue={prior.startTime}
               type="time"
-              aria-label="Start time"
               className={inputClass}
             />
           </div>
@@ -210,7 +234,6 @@ export default function WeddingInquiryForm() {
               name="endTime"
               defaultValue={prior.endTime}
               type="time"
-              aria-label="End time"
               className={inputClass}
             />
           </div>
@@ -226,9 +249,12 @@ export default function WeddingInquiryForm() {
           name="notes"
           defaultValue={prior.notes}
           rows={4}
+          maxLength={MAX_LENGTH.notes}
           className={inputClass}
         />
       </div>
+
+      <HoneypotField id="wedding-inquiry-website" />
 
       <button
         type="submit"
@@ -238,18 +264,18 @@ export default function WeddingInquiryForm() {
         {pending ? "Sending..." : "Send Wedding Inquiry"}
       </button>
 
-      {state.status !== "idle" && (
-        <p
-          role="status"
-          className={`text-sm ${
-            state.status === "success"
-              ? "text-secondary-accent"
-              : "text-red-600"
-          }`}
-        >
-          {state.message}
-        </p>
-      )}
+      <FormMessage id={MESSAGE_ID} state={state}>
+        {state.status === "success" && isCallBookingEnabled() && (
+          <>
+            {" "}
+            Next,{" "}
+            <Link href="/contact/call" className="font-semibold underline hover:text-ladybug">
+              schedule a call
+            </Link>{" "}
+            to talk it through.
+          </>
+        )}
+      </FormMessage>
     </form>
   );
 }

@@ -11,6 +11,12 @@ export type FormState = {
     form does clear.
   */
   values?: Record<string, string>;
+  /*
+    The fields a rejection is about, by name. Each one is marked aria-invalid
+    and pointed at the message, so a screen reader moving through the form
+    hears why that field was flagged. Absent on success.
+  */
+  invalid?: string[];
 };
 
 export const initialFormState: FormState = { status: "idle" };
