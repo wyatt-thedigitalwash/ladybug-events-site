@@ -3,7 +3,7 @@ import PageHero from "@/components/PageHero";
 import Ladybug from "@/components/motifs/Ladybug";
 import { EventsIcon, WeddingIcon } from "@/components/OfferingIcons";
 import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
-import { business, isCallBookingEnabled } from "@/lib/site";
+import { business, isTourBookingEnabled } from "@/lib/site";
 import { pageMetadata, seoPages } from "@/lib/seo";
 
 export const metadata = pageMetadata(seoPages.contact);
@@ -63,12 +63,12 @@ export default function ContactPage() {
         </div>
 
         {/*
-          A call is the step after an inquiry, so it sits below the two inquiry
+          A tour is the step after an inquiry, so it sits below the two inquiry
           cards rather than becoming a third one, and its copy says so.
           Hidden entirely until a Calendly link is configured, so the site
-          never shows a "Schedule a Call" button that goes nowhere useful.
+          never shows a "Schedule a Tour" button that goes nowhere useful.
         */}
-        {isCallBookingEnabled() && (
+        {isTourBookingEnabled() && (
           <div className="relative mx-auto mt-10 max-w-4xl px-6">
             <div className="flex flex-col items-center gap-4 rounded-2xl bg-tint px-6 py-7 text-center sm:flex-row sm:justify-between sm:text-left">
               <div>
@@ -76,18 +76,41 @@ export default function ContactPage() {
                   Already sent your inquiry?
                 </h2>
                 <p className="mt-1 text-sm text-foreground/85">
-                  Pick a time for a call and we&apos;ll talk through the details.
+                  Pick a time to tour the venue and see the space in person.
                 </p>
               </div>
               <Link
-                href="/contact/call"
+                href="/contact/tour"
                 className="shrink-0 rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background transition-colors hover:bg-secondary-accent"
               >
-                Schedule a Call
+                Schedule a Tour
               </Link>
             </div>
           </div>
         )}
+
+        {/* A different audience from the two cards above: businesses who want
+            to work at the venue, not guests booking it. Outlined rather than
+            tinted so it reads as secondary to the tour band. */}
+        <div className="relative mx-auto mt-6 max-w-4xl px-6">
+          <div className="flex flex-col items-center gap-4 rounded-2xl border border-foreground/15 bg-background px-6 py-7 text-center sm:flex-row sm:justify-between sm:text-left">
+            <div>
+              <h2 className="text-lg font-semibold text-foreground">
+                Are you an event vendor?
+              </h2>
+              <p className="mt-1 text-sm text-foreground/85">
+                Photographers, florists, bands, and caterers: tell us about
+                your business and let&apos;s work together.
+              </p>
+            </div>
+            <Link
+              href="/contact/vendor"
+              className="shrink-0 rounded-full border border-foreground/30 px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:border-ladybug/50"
+            >
+              Become a Vendor Partner
+            </Link>
+          </div>
+        </div>
 
         <div className="relative mx-auto mt-10 max-w-4xl px-6">
           <p className="rounded-2xl border border-dashed border-foreground/20 px-6 py-5 text-center text-sm text-foreground/85">

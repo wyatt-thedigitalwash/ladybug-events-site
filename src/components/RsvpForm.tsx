@@ -4,6 +4,7 @@ import { useActionState, useId } from "react";
 import FormMessage from "./FormMessage";
 import HoneypotField from "./HoneypotField";
 import { submitRsvp } from "@/lib/actions";
+import { upcomingDates, type Schedule } from "@/lib/community-dates";
 import { requiredField } from "@/lib/form-a11y";
 import { MAX_LENGTH } from "@/lib/form-limits";
 import { initialFormState } from "@/lib/types";
@@ -12,7 +13,13 @@ const inputClass =
   "mt-1 w-full rounded-lg border border-foreground/20 bg-background px-3 py-2 text-foreground";
 const labelClass = "block text-sm font-medium text-foreground";
 
-export default function RsvpForm({ event }: { event: string }) {
+export default function RsvpForm({
+  event,
+  schedule,
+}: {
+  event: string;
+  schedule: Schedule;
+}) {
   const [state, formAction, pending] = useActionState(
     submitRsvp,
     initialFormState,
@@ -31,12 +38,47 @@ export default function RsvpForm({ event }: { event: string }) {
   const messageId = idFor("message");
   const field = (name: string) => requiredField(state, name, messageId);
 
+  /*
+    Worked out from the event's schedule at the moment the form mounts, so the
+    list is always current. The form only mounts once the dialog is opened, in
+    the browser, which keeps a statically built page from shipping the dates
+    that were upcoming on the day it was built.
+  */
+  const months = upcomingDates(schedule);
+
   return (
     <form action={formAction} className="space-y-4">
       {/* The event is chosen by the card the visitor opened, so there is no
           dropdown to re-answer. Still validated server-side in submitRsvp. */}
       <input type="hidden" name="event" value={event} />
       <HoneypotField id={idFor("website")} />
+
+      <div>
+        <label htmlFor={idFor("eventDate")} className={labelClass}>
+          Date
+        </label>
+        {/* Keyed on the echoed value for the same reason as the inquiry
+            forms: a select's defaultValue only applies at mount. */}
+        <select
+          key={`eventDate-${prior.eventDate ?? ""}`}
+          id={idFor("eventDate")}
+          name="eventDate"
+          defaultValue={prior.eventDate}
+          required
+          {...field("eventDate")}
+          className={inputClass}
+        >
+          {months.map((group) => (
+            <optgroup key={group.month} label={group.month}>
+              {group.dates.map((date) => (
+                <option key={date.value} value={date.value}>
+                  {date.label}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>

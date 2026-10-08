@@ -36,7 +36,7 @@ export default async function CommunityPage({
       <PageHero
         bug="bottom-left"
         title="Free Events for the Neighborhood"
-        description="The Ladybug Venue opens its doors to the community with regular, free programming."
+        description="The Ladybug Venue is proud to open its doors to the neighborhood with regular FFCDC community events."
       />
 
       <section

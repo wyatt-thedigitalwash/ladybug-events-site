@@ -18,25 +18,25 @@ export const business = {
 };
 
 /*
-  Call booking, handled by Calendly rather than built here.
+  Tour booking, handled by Calendly rather than built here.
 
   A booking system owns availability, double-booking prevention, timezones,
   reschedules, cancellations, reminders and calendar sync. Getting any one of
-  those wrong means a call is missed or double-booked, and the owners could
+  those wrong means a tour is missed or double-booked, and the owners could
   not change their own hours without a code change.
 
-  Calls are meant to follow an inquiry, so the owners have the date, guest
-  count and package in hand before they pick up. The booking page says so.
+  Tours are meant to follow an inquiry, so the owners have the date, guest
+  count and package in hand before the visit. The booking page says so.
 
   Everything keyed off this link stays hidden while it is empty, so there is
-  never a dead "Schedule a Call" link on the site.
+  never a dead "Schedule a Tour" link on the site.
 */
-export const callBooking = {
+export const tourBooking = {
   calendlyUrl: "https://calendly.com/events-kdbugs/30min?primary_color=df8cff",
 };
 
-export function isCallBookingEnabled(): boolean {
-  return callBooking.calendlyUrl.trim().length > 0;
+export function isTourBookingEnabled(): boolean {
+  return tourBooking.calendlyUrl.trim().length > 0;
 }
 
 /*
@@ -65,24 +65,39 @@ export const navLinks = [
   { href: "/contact", label: "Contact" },
 ] as const;
 
+/*
+  `schedule` is the machine-readable form of `cadence`, and the RSVP form builds
+  its list of dates from it (src/lib/community-dates.ts). Change the two
+  together. `weeks` limits a weekday to those occurrences in the month, so
+  [1, 3] is the 1st and 3rd; leave it out for every week.
+*/
 export const communityEvents = [
   {
     name: "Bingo",
     cadence: "Every Monday",
     time: "5:30 PM",
+    schedule: { weekday: 1 },
     rsvpRequired: true,
   },
   {
     name: "Free Workout Class",
     cadence: "1st and 3rd Saturday",
     time: "11:00 AM",
+    schedule: { weekday: 6, weeks: [1, 3] },
     rsvpRequired: true,
   },
   {
     name: "Food Pantry",
     cadence: "1st and 3rd Saturday",
     time: "9:00-11:00 AM",
+    schedule: { weekday: 6, weeks: [1, 3] },
     rsvpRequired: false,
+    // Run by Faith Focus Community Development Corp, which keeps its own
+    // pantry listing on Vivery.
+    link: {
+      href: "https://sites.vivery.org/faith-focus-community-development-corp/plant-city-fl/23446",
+      label: "Pantry details",
+    },
   },
 ] as const;
 
@@ -92,16 +107,10 @@ export const communityEvents = [
   they outrank the workout class there: this is the celebration a visitor is
   actually picturing.
 
-  One landscape and three portraits. Grouped by orientation when laid out, the
-  same rule the other galleries follow.
+  Three portraits, all 3:4. There was a landscape of the whole room leading
+  them, removed at the client's request: they felt it looked messy.
 */
 export const babyShowerPhotos = {
-  room: {
-    src: "/events/babyshower/233.jpeg",
-    alt: "The indoor hall laid out with cloth-covered tables and folding chairs, guests seated throughout during a baby shower",
-    width: 800,
-    height: 600,
-  },
   backdrop: {
     src: "/events/babyshower/231.jpeg",
     alt: "A baby shower backdrop in the hall, with a pink and white balloon garland around an arch reading Oh Baby and stacked letter blocks beside it",
@@ -121,6 +130,118 @@ export const babyShowerPhotos = {
     height: 800,
   },
 } as const;
+
+/*
+  Venue photography for the Events page "The Spaces" gallery, the rooms
+  empty. Dimensions are the files' real pixel sizes, which lets
+  Next reserve the right space before each one loads.
+*/
+export const venuePhotos = [
+  {
+    src: "/events/LadybugEvents_Deck.JPG",
+    alt: "The outdoor deck in daylight, beside the venue building and bordered by a hedge",
+    width: 1440,
+    height: 960,
+  },
+  {
+    src: "/events/LadybugEvents_Kitchen.JPG",
+    alt: "The venue kitchen, with white cabinets, a wall oven, a range and a refrigerator",
+    width: 960,
+    height: 1440,
+  },
+  {
+    src: "/events/LadybugEvents_Yard.JPG",
+    alt: "The fenced back yard, with mown grass and mature trees along the fence line",
+    width: 1440,
+    height: 960,
+  },
+  {
+    src: "/events/LadybugEvents_KitchenWindow.JPG",
+    alt: "A serving window between the hall and the kitchen, with a long white counter",
+    width: 960,
+    height: 1440,
+  },
+  {
+    src: "/venue/Ladybug_Outdoor_Deck.jpg",
+    alt: "The outdoor deck at dusk, strung with warm string lights along the hedge",
+    width: 1920,
+    height: 1280,
+  },
+  {
+    src: "/events/LadybugEvents_YardMulch.JPG",
+    alt: "A shaded corner of the yard with a small bistro table on red mulch",
+    width: 1440,
+    height: 960,
+  },
+] as const;
+
+/*
+  A '70s-themed 70th birthday in the hall, from the photographer's gallery the
+  client shared (Anthony Carter Photography). Six of sixteen: most of the set
+  is guests posed at the same backdrop, so these are the cake, the two widest
+  groups and three portraits in different costumes.
+*/
+export const seventiethPhotos = {
+  wide: [
+    {
+      src: "/events/70birthday/2AC06646.jpg",
+      alt: "Two guests in a brown shirt and a blue shirt standing beside the cake table, with a tiered cake and a vase of flowers",
+      width: 1440,
+      height: 960,
+    },
+    {
+      src: "/events/70birthday/dsc09630.jpg",
+      alt: "Four guests in '70s outfits posing together in front of a gold-draped Happy 70th Birthday backdrop",
+      width: 1280,
+      height: 855,
+    },
+    {
+      src: "/events/70birthday/dsc09682.jpg",
+      alt: "A group of guests in '70s-style afros and outfits smiling in front of the birthday backdrop",
+      width: 1280,
+      height: 855,
+    },
+  ],
+  tall: [
+    {
+      src: "/events/70birthday/dsc09600.jpg",
+      alt: "Two guests in a patterned shirt and a red top striking a pose at the Happy 70th Birthday backdrop",
+      width: 721,
+      height: 1080,
+    },
+    {
+      src: "/events/70birthday/dsc09664.jpg",
+      alt: "Three guests in fringe, bell bottoms and a tie-dye shirt posing at the birthday backdrop",
+      width: 855,
+      height: 1280,
+    },
+    {
+      src: "/events/70birthday/dsc09640.jpg",
+      alt: "A guest in a brown suit and hat speaking into a microphone in front of the birthday backdrop",
+      width: 855,
+      height: 1280,
+    },
+  ],
+} as const;
+
+/*
+  An 80th birthday with an Elvis performer, client-supplied. Both frames are
+  the same shape, so they sit as a pair.
+*/
+export const eightiethPhotos = [
+  {
+    src: "/events/elvis/elvis-performer.jpg",
+    alt: "An Elvis performer in a white and blue jumpsuit singing into a microphone in the hall, beside a 1946 birthday poster",
+    width: 462,
+    height: 560,
+  },
+  {
+    src: "/events/elvis/80th-birthday-table.jpg",
+    alt: "A red-draped gift table under an 80th Birthday banner, with red, black and white balloons around it",
+    width: 960,
+    height: 1166,
+  },
+] as const;
 
 /*
   Photos from the free workout class, the only set we have of the venue with
@@ -235,14 +356,34 @@ export const eventPackages = [
   },
 ] as const;
 
-// The client's own words, from the About copy and the wedding package sheet.
+// The client's own lists, from their 2026-09 round of revisions.
 export const venueAmenities = [
   "Ample on-site parking",
-  "Audiovisual equipment",
-  "Comfortable seating",
+  "Tables + chairs",
+  "ADA restrooms",
+  "Kitchen access",
   "Customizable layouts",
-  "Kitchen area access",
-  "Surround sound with Bluetooth",
+] as const;
+
+export const venueAddOns = [
+  "AV equipment",
+  "Outdoor LED signage",
+  "Catering supplies",
+] as const;
+
+// What the vendor partnership form offers. Validated against server-side too.
+export const vendorCategories = [
+  "Photographer",
+  "Videographer",
+  "Florist",
+  "Band or DJ",
+  "Caterer",
+  "Baker",
+  "Bartender",
+  "Decor or Rentals",
+  "Hair and Makeup",
+  "Officiant",
+  "Other",
 ] as const;
 
 export const eventTypes = [
@@ -257,6 +398,12 @@ export const ledSignRental = {
   price: 75,
   description:
     "LED sign rental for the front of the venue, running from 3 days before your event through the event's close.",
+  photo: {
+    src: "/events/LEDLight.jpg",
+    alt: "The venue's roadside sign on black posts, with The Ladybug Group Event Space logo above a blank message board, facing the street",
+    width: 1440,
+    height: 1080,
+  },
 };
 
 export const aboutCopy = {

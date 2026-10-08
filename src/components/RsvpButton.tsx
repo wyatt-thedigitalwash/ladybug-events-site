@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { X } from "lucide-react";
 import RsvpForm from "./RsvpForm";
+import type { Schedule } from "@/lib/community-dates";
 
 /*
   RSVP button that opens the form in a dialog.
@@ -16,11 +17,13 @@ export default function RsvpButton({
   name,
   cadence,
   time,
+  schedule,
   autoOpen = false,
 }: {
   name: string;
   cadence: string;
   time: string;
+  schedule: Schedule;
   autoOpen?: boolean;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -127,9 +130,13 @@ export default function RsvpButton({
             {cadence}, {time}
           </p>
 
-          <div className="mt-6">
-            <RsvpForm key={openCount} event={name} />
-          </div>
+          {/* Not rendered until the dialog first opens, so the date list is
+              built in the browser on the day it is read. See RsvpForm. */}
+          {(openCount > 0 || autoOpen) && (
+            <div className="mt-6">
+              <RsvpForm key={openCount} event={name} schedule={schedule} />
+            </div>
+          )}
         </div>
       </dialog>
     </>

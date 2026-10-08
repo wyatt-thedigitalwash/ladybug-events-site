@@ -14,7 +14,7 @@ import { submissionKindLabels, type SubmissionKind } from "@/lib/types";
 */
 export const dynamic = "force-dynamic";
 
-const KINDS: SubmissionKind[] = ["rsvp", "wedding", "event"];
+const KINDS: SubmissionKind[] = ["rsvp", "wedding", "event", "vendor"];
 
 /*
   The community events that actually take an RSVP, which is what the per-event
@@ -84,7 +84,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
     listSubmissions({ kind, event }),
     countSubmissions(),
   ]);
-  const total = counts.kinds.rsvp + counts.kinds.wedding + counts.kinds.event;
+  const total = KINDS.reduce((sum, k) => sum + counts.kinds[k], 0);
   const query = new URLSearchParams(
     event ? { kind: "rsvp", event } : kind ? { kind } : {}
   ).toString();

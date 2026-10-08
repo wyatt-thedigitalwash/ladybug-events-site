@@ -12,7 +12,9 @@ import {
   reject,
   tooLongMessage,
 } from "@/lib/form-validation";
+import { formatEventDate, isUpcomingDate } from "@/lib/community-dates";
 import { isHoneypotFilled } from "@/lib/honeypot";
+import { communityEvents } from "@/lib/site";
 import { SUCCESS, record } from "@/lib/submission";
 import type { FormState } from "@/lib/types";
 
@@ -27,9 +29,15 @@ export async function submitRsvp(
 ): Promise<FormState> {
   if (isHoneypotFilled(formData)) return SUCCESS;
 
-  const { values, tooLong } = collect(formData, ["name", "email", "event", "guests"]);
+  const { values, tooLong } = collect(formData, [
+    "name",
+    "email",
+    "event",
+    "eventDate",
+    "guests",
+  ]);
 
-  const missing = missingFrom(values, ["name", "email", "event", "guests"]);
+  const missing = missingFrom(values, ["name", "email", "event", "eventDate", "guests"]);
   if (missing.length > 0) {
     return reject("Please fill out all fields.", values, missing);
   }
@@ -48,6 +56,13 @@ export async function submitRsvp(
     return reject("Please choose one of our community events.", values, ["event"]);
   }
 
+  // The event name was checked against this list just above, so it is found.
+  const schedule = communityEvents.find((e) => e.name === values.event)!.schedule;
+  if (!isUpcomingDate(values.eventDate, schedule)) {
+    return reject("Please choose one of the upcoming dates.", values, ["eventDate"]);
+  }
+  const dateLabel = formatEventDate(values.eventDate);
+
   const guests = Number(values.guests);
   if (!Number.isInteger(guests) || guests < 1 || guests > 100) {
     return reject("Please enter a number of guests between 1 and 100.", values, [
@@ -59,15 +74,17 @@ export async function submitRsvp(
     {
       kind: "rsvp",
       event: values.event,
+      eventDate: values.eventDate,
       name: values.name,
       email: values.email,
       guests,
     },
     {
-      subject: `RSVP: ${values.event} (${guests} ${guests === 1 ? "guest" : "guests"})`,
+      subject: `RSVP: ${values.event}, ${dateLabel} (${guests} ${guests === 1 ? "guest" : "guests"})`,
       heading: `New RSVP for ${values.event}`,
       fields: [
         { label: "Event", value: values.event },
+        { label: "Date", value: dateLabel },
         { label: "Name", value: values.name },
         { label: "Email", value: values.email },
         { label: "Guests", value: guests },
@@ -186,6 +203,81 @@ export async function submitWeddingInquiry(
         { label: "Space", value: values.space },
         { label: "Hours Needed", value: hours },
         { label: "Available to Tour", value: values.tour },
+        { label: "Notes", value: values.notes },
+      ],
+    },
+    values
+  );
+}
+
+export async function submitVendorInquiry(
+  _prevState: FormState,
+  formData: FormData
+): Promise<FormState> {
+  if (isHoneypotFilled(formData)) return SUCCESS;
+
+  const { values, tooLong } = collect(formData, [
+    "name",
+    "businessName",
+    "email",
+    "phone",
+    "vendorCategory",
+    // Not "website": that name belongs to the honeypot.
+    "portfolio",
+    "notes",
+  ]);
+
+  const missing = missingFrom(values, [
+    "name",
+    "businessName",
+    "email",
+    "phone",
+    "vendorCategory",
+  ]);
+  if (missing.length > 0) {
+    return reject("Please fill out all required fields.", values, missing);
+  }
+
+  if (tooLong.length > 0) {
+    return reject(tooLongMessage(tooLong), values, tooLong);
+  }
+
+  if (!isEmail(values.email)) {
+    return reject("Please enter a valid email address.", values, ["email"]);
+  }
+
+  if (!isPhone(values.phone)) {
+    return reject("Please enter a valid phone number.", values, ["phone"]);
+  }
+
+  const badChoices = invalidChoices(values, {
+    vendorCategory: OPTIONS.vendorCategory,
+  });
+  if (badChoices.length > 0) {
+    return reject("Please choose an option from the list.", values, badChoices);
+  }
+
+  return record(
+    {
+      kind: "vendor",
+      name: values.name,
+      businessName: values.businessName,
+      email: values.email,
+      phone: values.phone,
+      vendorCategory: values.vendorCategory,
+      website: values.portfolio,
+      notes: values.notes,
+    },
+    {
+      subject: `Vendor Inquiry: ${values.businessName} (${values.vendorCategory})`,
+      heading: "New Vendor Partnership Inquiry",
+      fields: [
+        { label: "Name", value: values.name },
+        { label: "Business", value: values.businessName },
+        { label: "Email", value: values.email },
+        { label: "Phone", value: values.phone },
+        { label: "Service", value: values.vendorCategory },
+        { label: "Website or Social", value: values.portfolio },
         { label: "Notes", value: values.notes },
       ],
     },

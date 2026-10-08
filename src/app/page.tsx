@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import CtaBand from "@/components/CtaBand";
+import HeroSlideshow from "@/components/HeroSlideshow";
 import HiddenLadybug from "@/components/motifs/HiddenLadybug";
 import EventCard from "@/components/EventCard";
+import OpenEventNote from "@/components/OpenEventNote";
 import RsvpButton from "@/components/RsvpButton";
 import ShellBand from "@/components/ShellBand";
 import { HOME_HERO_ID } from "@/components/Navbar";
@@ -24,11 +26,31 @@ import { pageMetadata, seoPages } from "@/lib/seo";
 export const metadata = pageMetadata(seoPages.home);
 
 /*
+  Outdoor photos, at the client's request; the chapel used to lead here. The
+  deck at dusk goes first as the strongest frame and the LCP. The client plans
+  to send new outdoor photos to replace or extend these.
+*/
+const heroSlides = [
+  {
+    src: "/venue/Ladybug_Outdoor_Deck.jpg",
+    alt: "The Ladybug Venue's outdoor deck at dusk, strung with warm string lights along the hedge",
+  },
+  {
+    src: "/events/LadybugEvents_Deck.JPG",
+    alt: "The outdoor deck in daylight, beside the venue building and bordered by a hedge",
+  },
+  {
+    src: "/events/LadybugEvents_Yard.JPG",
+    alt: "The fenced back yard, with mown grass and mature trees along the fence line",
+  },
+];
+
+/*
   Each card leads with a photograph of the space that offering actually uses.
-  No two are of the same room, and none repeats the chapel in the hero directly
-  above them. Weddings takes the deck rather than the chapel for that reason,
-  and because client policy rules out photographs of real weddings, so the
-  empty space has to carry the page.
+  No two are of the same room, and none repeats the outdoor hero directly
+  above them. Weddings takes the chapel for that reason, and because client
+  policy rules out photographs of real weddings, so the empty space has to
+  carry the page.
 */
 const offerings = [
   {
@@ -36,8 +58,8 @@ const offerings = [
     href: "/weddings",
     Icon: WeddingIcon,
     photo: {
-      src: "/venue/Ladybug_Outdoor_Deck.jpg",
-      alt: "The outdoor deck at dusk, strung with warm string lights along the hedge",
+      src: "/venue/Ladybug_Chapel.jpg",
+      alt: "Inside the chapel, with wooden pews lined with white flowers leading to a cross at the front",
     },
     description:
       "Rent the whole venue, indoor and outdoor, or choose a small all-inclusive package built for a budget-friendly wedding day.",
@@ -90,21 +112,10 @@ export default function Home() {
         aria-labelledby="home-title"
         className="relative flex min-h-svh items-center justify-center overflow-hidden text-center text-white"
       >
-        <Image
-          src="/venue/Ladybug_Chapel.jpg"
-          alt="Inside the Ladybug Venue chapel, with wooden pews lined with white flowers leading to a cross at the front"
-          fill
-          // The LCP element at every viewport. `preload` replaces the
-          // `priority` prop, deprecated in Next 16. Neither sets
-          // fetchpriority, so it is passed explicitly.
-          preload
-          fetchPriority="high"
-          sizes="100vw"
-          className="object-cover"
-        />
+        <HeroSlideshow slides={heroSlides} />
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/45 to-black/60"
+          className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/55 to-black/65"
         />
         <div className="relative mx-auto max-w-3xl px-6 pt-20 pb-16">
           {/* The logo carries the name, so it stays inside the h1 and its alt
@@ -122,9 +133,9 @@ export default function Home() {
               className="mx-auto h-auto w-full max-w-sm md:max-w-lg"
             />
           </h1>
-          {/* Full white. Sampled across six viewport sizes under the gradient,
-              white at 85% fell to 3.9:1 over the brightest parts of the photo;
-              full white holds 4.6. */}
+          {/* Full white. The daylight slides are far brighter than the chapel
+              photo that used to lead here, so the gradient behind this runs
+              darker than it did. */}
           <p className="mt-6 text-lg leading-8 text-white">
             A family-run event space where we bring your events to life,
             from weddings and private celebrations to free programming for
@@ -208,7 +219,7 @@ export default function Home() {
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-foreground/85">
             The Ladybug Venue is proud to open its doors to the neighborhood
-            with regular, free community events.
+            with regular FFCDC community events.
           </p>
           <ul className="mt-12 grid gap-6 sm:grid-cols-3 lg:gap-8">
             {communityEvents.map((event) => (
@@ -223,11 +234,12 @@ export default function Home() {
                         name={event.name}
                         cadence={event.cadence}
                         time={event.time}
+                        schedule={event.schedule}
                       />
                     ) : (
-                      <span className="text-sm text-foreground/85">
-                        Open to all, no RSVP needed
-                      </span>
+                      <OpenEventNote
+                        link={"link" in event ? event.link : undefined}
+                      />
                     )
                   }
                 />

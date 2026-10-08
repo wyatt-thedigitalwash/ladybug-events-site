@@ -23,6 +23,9 @@ export const MAX_LENGTH = {
   eventDate: 10,
   startTime: 8,
   endTime: 8,
+  businessName: 150,
+  vendorCategory: 100,
+  portfolio: 300,
   guests: 10,
 } as const;
 

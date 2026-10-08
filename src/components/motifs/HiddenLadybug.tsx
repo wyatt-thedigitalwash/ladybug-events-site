@@ -19,7 +19,7 @@ export type BugSpot = keyof typeof spots;
 export default function HiddenLadybug({ at }: { at: BugSpot }) {
   return (
     <Ladybug
-      className={`pointer-events-none absolute hidden h-5 w-5 text-ladybug opacity-80 md:block ${spots[at]}`}
+      className={`pointer-events-none absolute hidden h-10 w-10 text-ladybug opacity-80 md:block ${spots[at]}`}
     />
   );
 }

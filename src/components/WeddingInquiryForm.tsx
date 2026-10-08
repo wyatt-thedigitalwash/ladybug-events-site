@@ -9,7 +9,7 @@ import { requiredField } from "@/lib/form-a11y";
 import { MAX_LENGTH } from "@/lib/form-limits";
 import { initialFormState } from "@/lib/types";
 import {
-  isCallBookingEnabled,
+  isTourBookingEnabled,
   weddingGuestRange,
   weddingPackages,
 } from "@/lib/site";
@@ -265,14 +265,14 @@ export default function WeddingInquiryForm() {
       </button>
 
       <FormMessage id={MESSAGE_ID} state={state}>
-        {state.status === "success" && isCallBookingEnabled() && (
+        {state.status === "success" && isTourBookingEnabled() && (
           <>
             {" "}
             Next,{" "}
-            <Link href="/contact/call" className="font-semibold underline hover:text-ladybug">
-              schedule a call
+            <Link href="/contact/tour" className="font-semibold underline hover:text-ladybug">
+              schedule a tour
             </Link>{" "}
-            to talk it through.
+            to see the space in person.
           </>
         )}
       </FormMessage>

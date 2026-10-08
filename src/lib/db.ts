@@ -67,6 +67,9 @@ function ensureSchema(sql: NonNullable<ReturnType<typeof connection>>): Promise<
     await sql`ALTER TABLE submissions ADD COLUMN IF NOT EXISTS package_name text`;
     await sql`ALTER TABLE submissions ADD COLUMN IF NOT EXISTS start_time text`;
     await sql`ALTER TABLE submissions ADD COLUMN IF NOT EXISTS end_time text`;
+    await sql`ALTER TABLE submissions ADD COLUMN IF NOT EXISTS business_name text`;
+    await sql`ALTER TABLE submissions ADD COLUMN IF NOT EXISTS vendor_category text`;
+    await sql`ALTER TABLE submissions ADD COLUMN IF NOT EXISTS website text`;
     await sql`
       CREATE INDEX IF NOT EXISTS submissions_kind_created_at_idx
         ON submissions (kind, created_at DESC)
@@ -90,7 +93,8 @@ export async function saveSubmission(input: SubmissionInput): Promise<boolean> {
     await sql`
       INSERT INTO submissions
         (kind, event, name, email, phone, guests, event_type, event_date,
-         space, tour, package_name, start_time, end_time, notes)
+         space, tour, package_name, start_time, end_time, business_name,
+         vendor_category, website, notes)
       VALUES (
         ${input.kind},
         ${input.event ?? null},
@@ -105,6 +109,9 @@ export async function saveSubmission(input: SubmissionInput): Promise<boolean> {
         ${input.packageName || null},
         ${input.startTime || null},
         ${input.endTime || null},
+        ${input.businessName || null},
+        ${input.vendorCategory || null},
+        ${input.website || null},
         ${input.notes || null}
       )
     `;
@@ -130,6 +137,9 @@ type SubmissionRow = {
   package_name: string | null;
   start_time: string | null;
   end_time: string | null;
+  business_name: string | null;
+  vendor_category: string | null;
+  website: string | null;
   notes: string | null;
   created_at: Date | string;
 };
@@ -173,6 +183,9 @@ function toSubmission(row: SubmissionRow): Submission {
     packageName: row.package_name,
     startTime: row.start_time,
     endTime: row.end_time,
+    businessName: row.business_name,
+    vendorCategory: row.vendor_category,
+    website: row.website,
     notes: row.notes,
     createdAt: new Date(row.created_at).toISOString(),
   };
@@ -220,7 +233,7 @@ export type SubmissionCounts = {
 
 export async function countSubmissions(): Promise<SubmissionCounts> {
   const empty: SubmissionCounts = {
-    kinds: { rsvp: 0, wedding: 0, event: 0 },
+    kinds: { rsvp: 0, wedding: 0, event: 0, vendor: 0 },
     events: {},
   };
   const sql = connection();

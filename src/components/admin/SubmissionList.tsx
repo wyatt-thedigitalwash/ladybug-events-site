@@ -12,6 +12,7 @@ const kindStyles: Record<Submission["kind"], string> = {
   rsvp: "bg-surface-slate text-secondary-accent",
   wedding: "bg-surface-accent text-foreground",
   event: "bg-tint text-foreground",
+  vendor: "border border-foreground/20 text-foreground",
 };
 
 function formatReceived(iso: string): string {
@@ -135,6 +136,9 @@ export default function SubmissionList({
             {item.guests !== null && (
               <Detail label="Guests" value={String(item.guests)} />
             )}
+            <Detail label="Business" value={item.businessName} />
+            <Detail label="Service" value={item.vendorCategory} />
+            <Detail label="Website or Social" value={item.website} />
             <Detail label="Event Type" value={item.eventType} />
             <Detail
               label="Event Date"

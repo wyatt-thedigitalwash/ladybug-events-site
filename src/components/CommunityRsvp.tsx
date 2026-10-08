@@ -1,4 +1,5 @@
 import EventCard from "./EventCard";
+import OpenEventNote from "./OpenEventNote";
 import RsvpButton from "./RsvpButton";
 import { communityEvents } from "@/lib/site";
 
@@ -22,13 +23,12 @@ export default function CommunityRsvp({
                 name={event.name}
                 cadence={event.cadence}
                 time={event.time}
+                schedule={event.schedule}
                 // A link such as /community?event=Bingo opens that form on arrival.
                 autoOpen={initialEvent === event.name}
               />
             ) : (
-              <span className="text-sm text-foreground/85">
-                Open to all, no RSVP needed
-              </span>
+              <OpenEventNote link={"link" in event ? event.link : undefined} />
             )
           }
         />

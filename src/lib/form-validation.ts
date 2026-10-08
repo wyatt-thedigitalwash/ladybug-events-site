@@ -1,7 +1,7 @@
 import "server-only";
 
 import { MAX_LENGTH, type FieldName } from "@/lib/form-limits";
-import { communityEvents, weddingPackages } from "@/lib/site";
+import { communityEvents, vendorCategories, weddingPackages } from "@/lib/site";
 import type { FormState } from "@/lib/types";
 
 /*
@@ -67,6 +67,8 @@ export function reject(
 
 const TYPED_LABELS: Partial<Record<FieldName, string>> = {
   name: "your name",
+  businessName: "your business name",
+  portfolio: "your website",
   email: "your email",
   phone: "your phone number",
   notes: "your note",
@@ -121,6 +123,7 @@ export const OPTIONS = {
   space: ["Indoor & Outdoor", "Indoor Only", "Not Sure Yet"] as readonly string[],
   tour: ["Yes, weekdays", "Yes, weekends", "Yes, flexible", "Not yet"] as readonly string[],
   eventType: ["Birthday", "Baby Shower", "Baptism", "Other"] as readonly string[],
+  vendorCategory: vendorCategories as readonly string[],
 };
 
 /* The fields whose value is not one of the options that field offers. */

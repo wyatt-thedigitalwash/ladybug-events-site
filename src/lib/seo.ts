@@ -107,12 +107,19 @@ export const seoPages = {
     description:
       "Start a private event inquiry with The Ladybug Venue in Plant City, FL for a birthday, baby shower or baptism, and we will confirm availability and pricing.",
   },
-  contactCall: {
-    name: "Schedule a Call",
-    path: "/contact/call",
+  contactVendor: {
+    name: "Vendor Partnerships",
+    path: "/contact/vendor",
     parent: contact,
     description:
-      "Schedule a 30-minute call with The Ladybug Venue in Plant City, FL to talk through your wedding or private event date, guest count and venue rental options.",
+      "Photographers, florists, bands, caterers and other event pros: tell The Ladybug Venue in Plant City, FL about your business and explore a partnership.",
+  },
+  contactTour: {
+    name: "Schedule a Tour",
+    path: "/contact/tour",
+    parent: contact,
+    description:
+      "Schedule a tour of The Ladybug Venue in Plant City, FL. See the chapel, hall, deck and yard in person before booking your wedding or private event.",
   },
 } satisfies Record<string, SeoPage>;
 

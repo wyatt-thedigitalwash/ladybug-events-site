@@ -35,9 +35,9 @@ LadyBug Events is a family-run event venue (owned and operated by a group of sis
 ## Events & Baptisms Content
 Events and Baptisms were built out from client-confirmed facts only.
 - `eventPackages` carries the two rentals; both prices are client-confirmed. Guest counts and access hours are deliberately absent, since the only figures for those come from the wedding one-sheet and have not been confirmed for private events.
-- `venueAmenities` is the client's own wording, taken from the About copy and the wedding package sheet.
+- `venueAmenities` (Included) and `venueAddOns` (Add-ons) are the client's own lists from their 2026-09 revisions. "Comfortable seating" became "Tables + chairs" and "Surround sound" became the AV equipment add-on. The wedding package still lists surround sound; the change was for the Events section only.
 - Baptisms uses the chapel photo and routes pricing to the Events page rather than restating it, so there is one place to update.
-- Photo usage: chapel on the home hero, Weddings and Baptisms; outdoor deck at dusk on Weddings and in the Events gallery; the five `public/events/` photos in the Events "The Spaces" gallery; the baptismal pool on Baptisms.
+- Photo usage: outdoor slideshow on the home hero (deck at dusk, deck in daylight, yard; client is sending more outdoor photos); chapel on the home Weddings card, Weddings and Baptisms; outdoor deck at dusk on Weddings and in the Events gallery; the five `public/events/` photos in the Events "The Spaces" gallery; the baptismal pool on Baptisms.
 - The Events gallery uses CSS columns, not a grid. The photos mix portrait and landscape and this keeps each at its own proportions instead of cropping them all to a shared box.
 - The venue has a tiled baptismal immersion pool with a painted mural. This surfaced from a client photo, not from the brief, and it changes what the Baptisms page can claim: the baptism itself can happen on site, not only the reception. Worth confirming with the client whether the pool is in service and what preparation it needs, since the page now says to ask.
 
@@ -53,7 +53,7 @@ From the client's "Small Weddings" one-sheet (Ladybug Event Venue Small Weddings
 
 ## Ladybug Motif
 Approved 2026-09-09. Two treatments, both inline SVG, no image files.
-- Hidden ladybug: one small line-art ladybug in ladybug red tucked into a section's background (`HiddenLadybug`), at a different spot per page. Every page hero has one; the home What We Host and community sections, the weddings closing section and the events pricing section have one too. Hidden below the 768px breakpoint. Keep it sparse and always clear of content.
+- Hidden ladybug: one line-art ladybug in ladybug red, 40px (it was 20px and the client said it read as a smudge on the screen), tucked into a section's background (`HiddenLadybug`), at a different spot per page. Every page hero has one; the home What We Host and community sections, the weddings closing section and the events pricing section have one too. Hidden below the 768px breakpoint. Keep it sparse and always clear of content.
 - No decorative dividers or rules under headings.
 - Shell band: the curved underside (`.shell-band`) is the shape, and it now appears in two treatments. On the Weddings and Events pricing card headers it is the #F4EEEB tint marked with five spots, one of them ladybug red at 50% opacity. On the four home offering cards the panel is a **photograph** of the space instead, at the client's request to show pictures rather than spots; `ShellBand` is that photo component and takes a `photo` prop. Spots are never drawn over a photo. Four arrangements rotate across the cards so no two bands are identical; every arrangement keeps the same rules, five spots, sizes 20 to 34, exactly one red, and the red sits in a different quadrant on each card.
 - Spot size follows a real ladybug, roughly a fifth of the shell's height. They were a twelfth of it and read as dust rather than markings, and vanished at phone width. Tonal spots sit at 10% since larger spots cover about four times the area.
@@ -61,15 +61,15 @@ Approved 2026-09-09. Two treatments, both inline SVG, no image files.
 - On the photo treatment the clip sits on an inner element rather than the band wrapper, because the medallion hangs past the curve on purpose and an `overflow-hidden` parent cuts it in half.
 - The photo band is 200px tall (236px at lg), not the 104/128px the tinted band used. A photograph at 104px is a sliver.
 - A wash runs along the bottom fifth of the photo. The curve is the shape that makes the panel a ladybug's back rather than a rectangle, and against a bright sky or a white wall it vanished into the card.
-- Home card photos, chosen so no two show the same room and none repeats the chapel in the hero directly above them: Weddings takes the deck at dusk, Events the baby shower balloon arch, Baptisms the tiled pool, Community the workout class in the hall. Events is the only card showing a celebration rather than an empty room, and it took the yard corner with the bistro table until the baby shower photos arrived. Its crop is `center 30%`, since the arch and garland sit in the upper half of a tall frame.
-- `BandPhoto` takes an optional `position` (`object-position`), set as an inline style rather than a utility class because the value varies per photo and Tailwind cannot see a class name built at runtime. Baptisms is the only one that needs it, at `center 60%`: the basin sits in the lower half of a tall frame, so a centred crop filled the band with mural and showed almost no pool. Raising the percentage slides the crop window down the source, which moves the visible content up. Weddings cannot use a real wedding photo (client policy), which is why it takes the empty deck rather than a ceremony.
+- Home card photos, chosen so no two show the same room and none repeats the outdoor hero directly above them: Weddings takes the chapel (it took the deck at dusk until the hero moved outdoors), Events the baby shower balloon arch, Baptisms the tiled pool, Community the workout class in the hall. Events is the only card showing a celebration rather than an empty room, and it took the yard corner with the bistro table until the baby shower photos arrived. Its crop is `center 30%`, since the arch and garland sit in the upper half of a tall frame.
+- `BandPhoto` takes an optional `position` (`object-position`), set as an inline style rather than a utility class because the value varies per photo and Tailwind cannot see a class name built at runtime. Baptisms is the only one that needs it, at `center 60%`: the basin sits in the lower half of a tall frame, so a centred crop filled the band with mural and showed almost no pool. Raising the percentage slides the crop window down the source, which moves the visible content up. Weddings cannot use a real wedding photo (client policy), which is why it takes the empty chapel rather than a ceremony.
 - Watermark: large outline ladybug at 8% opacity cropped into the bottom-right corner of the tinted CTA band (`CtaBand`).
 - Ladybug red #A8463F is reserved for the ladybug motif and for card hover states. Hover borders use `ladybug/50` so they match the red spot exactly; the Learn more link uses full strength for legibility. Never use red for resting-state buttons, links, or body text.
 - Set ladybug transparency with an `opacity` class on the element, never an alpha color like `text-foreground/10`. Per-stroke alpha compounds where strokes meet and prints those joints darker than the rest of the drawing.
 - CTA band tint is #F4EEEB.
 - Every card and tinted block needs an opaque background so the dots do not show through. Use `bg-background`, or the solid tokens `bg-surface-accent`, `bg-surface-slate`, `bg-surface-slate-strong`.
 - No dot texture on section backgrounds. It was removed at the client's request; do not reintroduce it. The dots inside the card shell bands are a separate thing and stay.
-- Nothing over the home hero photo, and nothing in the footer.
+- Nothing over the home hero photo except the slideshow's pause button, which WCAG 2.2.2 requires for anything that moves on its own for more than five seconds. Nothing in the footer.
 
 ## Email Sending Domain
 Mail is sent from **thedigitalwash.com** (the agency's own domain, verified in Resend), not from kdbugs.com. The client is not verifying kdbugs.com and does not need to: Resend verifies the sending domain, not the recipient, so a verified sender reaches any address. This removes what looked like a hard constraint, that an unverified account can notify only the Resend account holder's own inbox.
@@ -98,14 +98,14 @@ Beyond contact details and date, the form asks the three things the owners need 
 - Storage is Neon Postgres over `@neondatabase/serverless`, one append-only `submissions` table covering all three form kinds. One table keeps the admin list, the CSV export and the storage layer simple; three would triple all of them to save some null columns. The schema is created on first use and memoized, rather than through a migration runner.
 - The SQL has not been run against a live database yet. There was no local Postgres or Docker available, and the Neon HTTP driver cannot talk to one anyway, so the first real exercise of it is the first submission after DATABASE_URL is set.
 
-## Call Booking
+## Tour Booking
 Handled by Calendly, not built here. A booking system owns availability, double-booking prevention, timezones, reschedules, cancellations, reminders and calendar sync; getting any one wrong means a missed or double-booked call, and a hand-rolled one would mean the owners cannot change their own hours without a code change.
-- Client supplied the link 2026-09-15: a 30-minute call, `https://calendly.com/events-kdbugs/30min?primary_color=df8cff`. It lives in `callBooking.calendlyUrl` in src/lib/site.ts. This was scaffolded as tour booking at `/contact/tour`; it was renamed to `/contact/call` once the link turned out to be for a call.
-- A call is the step AFTER an inquiry, per the client. `/contact/call` shows a note above the calendar asking visitors to send a wedding or event inquiry first, with links to both forms. The Contact page band reads "Already sent your inquiry?", and both inquiry forms link to the call page in their success message.
-- If the link is ever cleared, none of that renders. `/contact/call` still exists and shows a call-us fallback, and the sitemap omits it.
-- The Calendly script loads on `/contact/call` only, not through the app shell, so the Performance audit does not find a third-party script on every route.
+- Client supplied the link 2026-09-15, `https://calendly.com/events-kdbugs/30min?primary_color=df8cff`, in `tourBooking.calendlyUrl` in src/lib/site.ts. Briefly renamed to `/contact/call`, then back to `/contact/tour` in 2026-09 when the client said visitors are booking a tour, not a call. The event's name and description inside Calendly ("30 Minute Meeting") are set in the client's Calendly account, not here.
+- A tour is the step AFTER an inquiry, per the client. `/contact/tour` shows a note above the calendar asking visitors to send a wedding or event inquiry first, with links to both forms. The Contact page band reads "Already sent your inquiry?", and both inquiry forms link to the tour page in their success message.
+- If the link is ever cleared, none of that renders. `/contact/tour` still exists and shows a call-us fallback, and the sitemap omits it.
+- The Calendly script loads on `/contact/tour` only, not through the app shell, so the Performance audit does not find a third-party script on every route.
 - The embed has a visible fallback. If the script is blocked, offline or slow, the page says to call rather than showing an empty box, because a booking widget that silently fails to render just looks broken.
-- Tours are still offered, just not booked online: the wedding inquiry form asks for tour availability.
+- The wedding inquiry form also asks for tour availability.
 
 ## Admin Submissions Page
 `/admin` lists every submission, with a CSV export at `/admin/export`.
@@ -127,8 +127,10 @@ The workout photos are shared with the Events page from `workoutPhotos` in src/l
 
 ## Events Page Photography
 Three galleries, answering different questions.
-- "A Baby Shower Here" is a private event actually happening in the hall. It outranks the workout class on this page: a baby shower is the celebration an Events visitor is picturing, where a fitness class needs explaining. Files live in `public/events/babyshower/`.
-- One landscape leads, then the three portraits as a row of three. All three portraits are 3:4, so they line up exactly.
+- "Celebrations Here" (`CelebrationGalleries`) is private events actually happening in the hall, one block per party: a '70s-themed 70th birthday, an 80th birthday with an Elvis performer, and the baby shower. It outranks the workout class on this page: a party is the celebration an Events visitor is picturing, where a fitness class needs explaining. It replaced the baby-shower-only gallery in 2026-09.
+- 70th: 6 of the 16 files in `public/events/70birthday/` (from the Anthony Carter Photography gallery), chosen for variety since most of the set is guests posed at one backdrop. Three landscapes across the full width, then three portraits held to `max-w-3xl`. The other 10 files are unused.
+- 80th: `public/events/elvis/`. The client sent two macOS screenshots (PNGs, up to 2.9MB, with a narrow no-break space in the filenames). They were converted to `elvis-performer.jpg` and `80th-birthday-table.jpg`; the PNGs are unused. The images are AI-edited, per the agency, because the real photos were poor.
+- Baby shower: the three portraits as a row of three, all 3:4 so they line up exactly. The landscape of the whole room that led them was removed at the client's request (they felt it looked messy).
 - The whole gallery is held to `max-w-3xl`, not the section's `max-w-6xl`. The landscape file is only 800px wide and was visibly soft stretched across 1152px. This is the one gallery on the page whose width is set by the source files rather than by the layout.
 - "The Spaces" is the rooms empty: hall, kitchen, deck, yard. Three-column masonry on the page ground.
 - "The Space in Use" is the venue full of people, from the free workout class. It is the only set showing the hall and deck actually in use, so it carries the point that the room is an open floor rather than a fixed layout. Files live in `public/workouts/`.
@@ -136,6 +138,7 @@ Three galleries, answering different questions.
 - The portraits are held to a narrower measure because at a third of the page each one stands taller than the whole row above it.
 - Both rows sit in fixed-width containers past their breakpoint, so `sizes` names the pixel width rather than a vw fraction. A vw hint understated the box and the optimizer shipped a visibly soft image.
 - The baby shower photos are small files (600 to 800px on the long edge) next to the venue photography at 1440 to 1920px. Anywhere they are placed, check the rendered width against the file width before trusting the layout.
+- The LED sign add-on card carries `ledSignRental.photo` (`public/events/LEDLight.jpg`, the roadside sign with its message board blank), beside the copy from md up and stacked above it on a phone. Added in 2026-09 after the client asked why the sign was missing from the site.
 - The section closes with a line linking to the community page, since these are the free workout class and the photos would otherwise raise a question the page does not answer.
 
 ## Container Widths
@@ -181,7 +184,17 @@ The community event cards are the RSVP picker; there is no event dropdown.
 - The form is remounted on each open so a previous submission's message never greets the next visitor.
 - Open and close are animated with keyframes keyed off a `data-state` attribute, not CSS transitions with `@starting-style`. The close is sequenced in JS: `requestClose` sets `data-state="closing"`, and `close()` only runs on `animationend` (with a 400ms fallback). Calling `close()` directly removes the element on the first frame and the exit is never seen. Escape is intercepted via `onCancel` so it animates rather than closing instantly.
 - `/community?event=<name>` still opens that event's dialog on arrival, for links from elsewhere.
-- One form instance for the whole site. `RsvpForm` requires an `event` prop.
+- One form instance for the whole site. `RsvpForm` requires `event` and `schedule` props.
+- The RSVP asks for a specific date. Options are built from each event's `schedule` in `communityEvents` (weekday plus which weeks of the month) by src/lib/community-dates.ts: every occurrence from today through the end of next month, grouped by month, with "today" taken in Eastern time. Keep `schedule` and `cadence` in step.
+- The form only mounts once the dialog opens, so on the statically built home page the dates are computed in the browser on the day, not frozen at build time.
+- The server checks the posted date matches the schedule and falls in the same window, allowing the day before today for a form opened just before midnight. Stored in `event_date`, so the admin card and CSV show which session the RSVP is for.
+- The food pantry card links to FFCDC's Vivery listing (`link` on the pantry entry), opening in a new tab.
+
+## Vendor Partnership Form
+`/contact/vendor`, linked from an outlined band on Contact below the tour band. For photographers, florists, bands and other businesses who want to work with the venue, a separate audience from people booking it.
+- Stored as kind `vendor` in the same `submissions` table, with three added columns: `business_name`, `vendor_category`, `website`. Has its own admin chip and CSV columns.
+- Categories are `vendorCategories` in src/lib/site.ts, validated server-side.
+- The website field posts as `portfolio`. `website` is the honeypot's name, and a real field under it would make every vendor who filled it in look like a bot and be silently dropped.
 
 ## Logo Files
 `public/brand/ladybug-group-logo.svg` and `.png`, both transparent, plus `-light` variants for dark grounds.

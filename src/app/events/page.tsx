@@ -1,91 +1,29 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Check } from "lucide-react";
+import { Check, Plus } from "lucide-react";
 import PageHero from "@/components/PageHero";
+import CelebrationGalleries from "@/components/CelebrationGalleries";
 import CtaBand from "@/components/CtaBand";
 import HiddenLadybug from "@/components/motifs/HiddenLadybug";
 import ShellSpots from "@/components/motifs/ShellSpots";
 import { BreadcrumbJsonLd, ServiceJsonLd } from "@/components/seo/JsonLd";
 import {
-  babyShowerPhotos,
   eventPackages,
   ledSignRental,
+  venueAddOns,
   venueAmenities,
+  venuePhotos,
   workoutPhotos,
 } from "@/lib/site";
 import { pageMetadata, seoPages } from "@/lib/seo";
 
 export const metadata = pageMetadata(seoPages.events);
 
-/*
-  Venue photography. Dimensions are the files' real pixel sizes, which lets
-  Next reserve the right space before each one loads.
-*/
-const venuePhotos = [
-  {
-    src: "/events/LadybugEvents_Deck.JPG",
-    alt: "The outdoor deck in daylight, beside the venue building and bordered by a hedge",
-    width: 1440,
-    height: 960,
-  },
-  {
-    src: "/events/LadybugEvents_Kitchen.JPG",
-    alt: "The venue kitchen, with white cabinets, a wall oven, a range and a refrigerator",
-    width: 960,
-    height: 1440,
-  },
-  {
-    src: "/events/LadybugEvents_Yard.JPG",
-    alt: "The fenced back yard, with mown grass and mature trees along the fence line",
-    width: 1440,
-    height: 960,
-  },
-  {
-    src: "/events/LadybugEvents_KitchenWindow.JPG",
-    alt: "A serving window between the hall and the kitchen, with a long white counter",
-    width: 960,
-    height: 1440,
-  },
-  {
-    src: "/venue/Ladybug_Outdoor_Deck.jpg",
-    alt: "The outdoor deck at dusk, strung with warm string lights along the hedge",
-    width: 1920,
-    height: 1280,
-  },
-  {
-    src: "/events/LadybugEvents_YardMulch.JPG",
-    alt: "A shaded corner of the yard with a small bistro table on red mulch",
-    width: 1440,
-    height: 960,
-  },
-];
-
-/*
-  The venue with people in it. These are from the free workout class, the only
-  photos we have of the hall and deck actually full, so they carry the point
-  that the room is an open floor rather than a fixed layout. Shared with the
-  Community page from src/lib/site.ts, which makes the same frames the subject
-  rather than the setting.
-
-  Split by orientation rather than run through the masonry used above. Three
-  landscapes and two portraits will not balance across columns at any ordering,
-  and the shortfall showed as a column of empty space. Two rows of matching
-  shapes fill evenly and still crop nothing.
-*/
-const inUseWide = [
-  workoutPhotos.deck,
-  workoutPhotos.hall,
-  workoutPhotos.backdrop,
-];
-
+// The workout class: the hall and deck full, so the room reads as an open
+// floor. Split by orientation; 3 landscapes and 2 portraits won't balance.
+const inUseWide = [workoutPhotos.deck, workoutPhotos.hall, workoutPhotos.backdrop];
 const inUseTall = [workoutPhotos.group, workoutPhotos.instructor];
 
-// The three portraits from the baby shower; the landscape leads above them.
-const babyShowerRow = [
-  babyShowerPhotos.backdrop,
-  babyShowerPhotos.guests,
-  babyShowerPhotos.game,
-];
 
 export default function EventsPage() {
   return (
@@ -164,24 +102,48 @@ export default function EventsPage() {
                   id="included-title"
                   className="text-2xl font-semibold tracking-tight text-foreground"
                 >
-                  Included With Every Rental
+                  Included &amp; Add-Ons
                 </h2>
                 <p className="mt-3 text-base leading-7 text-foreground/85">
                   Both rentals come with the same essentials. The price
-                  difference is only how much of the property you use.
+                  difference is only how much of the property you use. Add-ons
+                  are available on request.
                 </p>
               </div>
-              <ul className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
-                {venueAmenities.map((item) => (
-                  <li key={item} className="flex gap-3 text-base leading-6">
-                    <Check
-                      aria-hidden="true"
-                      className="mt-1 h-4 w-4 shrink-0 text-secondary-accent"
-                    />
-                    <span className="text-foreground/85">{item}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="grid gap-8 sm:grid-cols-2">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">
+                    Included
+                  </h3>
+                  <ul className="mt-3 space-y-3">
+                    {venueAmenities.map((item) => (
+                      <li key={item} className="flex gap-3 text-base leading-6">
+                        <Check
+                          aria-hidden="true"
+                          className="mt-1 h-4 w-4 shrink-0 text-secondary-accent"
+                        />
+                        <span className="text-foreground/85">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">
+                    Add-ons
+                  </h3>
+                  <ul className="mt-3 space-y-3">
+                    {venueAddOns.map((item) => (
+                      <li key={item} className="flex gap-3 text-base leading-6">
+                        <Plus
+                          aria-hidden="true"
+                          className="mt-1 h-4 w-4 shrink-0 text-secondary-accent"
+                        />
+                        <span className="text-foreground/85">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -205,9 +167,8 @@ export default function EventsPage() {
             outside.
           </p>
 
-          {/* CSS columns rather than a grid: the photos are a mix of portrait
-              and landscape, and this keeps every one at its own proportions
-              instead of cropping them all to a shared box. */}
+          {/* CSS columns, so mixed portraits and landscapes keep their own
+              proportions instead of cropping to a shared box. */}
           <div className="mt-12 columns-1 gap-6 sm:columns-2 lg:columns-3">
             {venuePhotos.map((photo) => (
               <div
@@ -228,58 +189,7 @@ export default function EventsPage() {
         </div>
       </section>
 
-      <section
-        data-bg="light"
-        aria-labelledby="baby-shower-title"
-        className="pb-20 md:pb-24"
-      >
-        <div className="mx-auto max-w-6xl px-6">
-          <h2
-            id="baby-shower-title"
-            className="text-center text-3xl font-semibold tracking-tight text-foreground"
-          >
-            A Baby Shower Here
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-base leading-7 text-foreground/85">
-            One afternoon in the indoor hall, decorated and set for a baby
-            shower. The room came with the tables, the chairs and the floor;
-            everything else the family brought.
-          </p>
-
-          {/* The landscape leads, the three portraits follow as a row. Same
-              rule as the other galleries: matching shapes per row fill evenly
-              and crop nothing.
-
-              Held to max-w-3xl rather than the section's full 6xl. The file is
-              only 800px wide, and stretched across 1152px it was being upscaled
-              and came out visibly soft. */}
-          <div className="mx-auto mt-12 max-w-3xl overflow-hidden rounded-3xl">
-            <Image
-              src={babyShowerPhotos.room.src}
-              alt={babyShowerPhotos.room.alt}
-              width={babyShowerPhotos.room.width}
-              height={babyShowerPhotos.room.height}
-              sizes="(min-width: 768px) 768px, 90vw"
-              className="h-auto w-full"
-            />
-          </div>
-
-          <div className="mx-auto mt-6 grid max-w-3xl gap-6 sm:grid-cols-3">
-            {babyShowerRow.map((photo) => (
-              <div key={photo.src} className="overflow-hidden rounded-3xl">
-                <Image
-                  src={photo.src}
-                  alt={photo.alt}
-                  width={photo.width}
-                  height={photo.height}
-                  sizes="(min-width: 768px) 240px, (min-width: 640px) 31vw, 90vw"
-                  className="h-auto w-full"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <CelebrationGalleries />
 
       <section
         data-bg="light"
@@ -316,8 +226,7 @@ export default function EventsPage() {
             ))}
           </div>
 
-          {/* Held to a narrower measure. At a third of the page each of these
-              would stand taller than the whole row above it. */}
+          {/* Narrower, or each would stand taller than the row above. */}
           <div className="mx-auto mt-6 grid max-w-3xl gap-6 sm:grid-cols-2">
             {inUseTall.map((photo) => (
               <div
@@ -354,14 +263,24 @@ export default function EventsPage() {
         aria-labelledby="led-sign-title"
         className="pb-20 md:pb-24"
       >
-        <div className="mx-auto max-w-3xl px-6">
-          <div className="rounded-3xl bg-surface-slate px-8 py-7 text-center">
-            <h2 id="led-sign-title" className="text-xl font-semibold text-foreground">
-              Add an LED sign, ${ledSignRental.price}
-            </h2>
-            <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-foreground/85">
-              {ledSignRental.description}
-            </p>
+        <div className="mx-auto max-w-4xl px-6">
+          <div className="grid overflow-hidden rounded-3xl bg-surface-slate md:grid-cols-2 md:items-center">
+            <Image
+              src={ledSignRental.photo.src}
+              alt={ledSignRental.photo.alt}
+              width={ledSignRental.photo.width}
+              height={ledSignRental.photo.height}
+              sizes="(min-width: 896px) 424px, (min-width: 768px) 46vw, 90vw"
+              className="h-auto w-full"
+            />
+            <div className="px-8 py-7 text-center md:text-left">
+              <h2 id="led-sign-title" className="text-xl font-semibold text-foreground">
+                Add an LED sign, ${ledSignRental.price}
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-foreground/85">
+                {ledSignRental.description}
+              </p>
+            </div>
           </div>
         </div>
       </section>

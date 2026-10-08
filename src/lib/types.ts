@@ -22,13 +22,13 @@ export type FormState = {
 export const initialFormState: FormState = { status: "idle" };
 
 /*
-  Every form on the site lands in one `submissions` table. The three kinds use
+  Every form on the site lands in one `submissions` table. The four kinds use
   overlapping but not identical fields, so the optional ones are the union of
   what any single form collects rather than a per-kind shape. One table keeps
   the admin list, the CSV export and the storage layer simple; splitting it
   into three would triple all of them to save a handful of null columns.
 */
-export type SubmissionKind = "rsvp" | "wedding" | "event";
+export type SubmissionKind = "rsvp" | "wedding" | "event" | "vendor";
 
 export type SubmissionInput = {
   kind: SubmissionKind;
@@ -44,6 +44,9 @@ export type SubmissionInput = {
   packageName?: string;
   startTime?: string;
   endTime?: string;
+  businessName?: string;
+  vendorCategory?: string;
+  website?: string;
   notes?: string;
 };
 
@@ -62,6 +65,9 @@ export type Submission = {
   packageName: string | null;
   startTime: string | null;
   endTime: string | null;
+  businessName: string | null;
+  vendorCategory: string | null;
+  website: string | null;
   notes: string | null;
   createdAt: string;
 };
@@ -80,4 +86,5 @@ export const submissionKindLabels: Record<SubmissionKind, string> = {
   rsvp: "Community RSVP",
   wedding: "Wedding Inquiry",
   event: "Event Inquiry",
+  vendor: "Vendor Inquiry",
 };

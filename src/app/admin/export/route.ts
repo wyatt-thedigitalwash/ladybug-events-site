@@ -3,7 +3,7 @@ import { listSubmissions } from "@/lib/db";
 import { communityEvents } from "@/lib/site";
 import { submissionKindLabels, type SubmissionKind } from "@/lib/types";
 
-const KINDS: SubmissionKind[] = ["rsvp", "wedding", "event"];
+const KINDS: SubmissionKind[] = ["rsvp", "wedding", "event", "vendor"];
 
 // Widened to string[]: communityEvents is `as const`, so the mapped names
 // narrow to literal types and cannot be tested against an arbitrary query
@@ -27,6 +27,9 @@ const COLUMNS = [
   "Start Time",
   "End Time",
   "Available to Tour",
+  "Business",
+  "Vendor Service",
+  "Website",
   "Notes",
 ] as const;
 
@@ -96,6 +99,9 @@ export async function GET(request: Request) {
       item.startTime,
       item.endTime,
       item.tour,
+      item.businessName,
+      item.vendorCategory,
+      item.website,
       item.notes,
     ]
       .map(csvCell)
