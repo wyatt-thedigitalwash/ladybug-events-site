@@ -26,31 +26,44 @@ import { pageMetadata, seoPages } from "@/lib/seo";
 export const metadata = pageMetadata(seoPages.home);
 
 /*
-  Outdoor photos, at the client's request; the chapel used to lead here. The
-  deck at dusk goes first as the strongest frame and the LCP. The client plans
-  to send new outdoor photos to replace or extend these.
+  The chapel leads, as it always has, and is the LCP. The outdoor photos follow
+  at the client's request, to show the rest of the property. The client plans
+  to send more outdoor photos to extend these.
+
+  Each slide sets its own overlay, kept light at the client's request so the
+  photos read as photos. The darker the photo, the lighter its overlay. What
+  keeps the white copy legible on the bright daylight slides is the soft scrim
+  and text shadow behind the copy itself, not a darker overlay across the
+  whole frame. The classes are written out in full so Tailwind can see them.
 */
 const heroSlides = [
   {
+    src: "/venue/Ladybug_Chapel.jpg",
+    alt: "Inside the Ladybug Venue chapel, with wooden pews lined with white flowers leading to a cross at the front",
+    overlay: "from-black/30 via-black/15 to-black/30",
+  },
+  {
     src: "/venue/Ladybug_Outdoor_Deck.jpg",
     alt: "The Ladybug Venue's outdoor deck at dusk, strung with warm string lights along the hedge",
+    overlay: "from-black/25 via-black/5 to-black/20",
   },
   {
     src: "/events/LadybugEvents_Deck.JPG",
     alt: "The outdoor deck in daylight, beside the venue building and bordered by a hedge",
+    overlay: "from-black/30 via-black/20 to-black/30",
   },
   {
     src: "/events/LadybugEvents_Yard.JPG",
     alt: "The fenced back yard, with mown grass and mature trees along the fence line",
+    overlay: "from-black/35 via-black/25 to-black/35",
   },
 ];
 
 /*
   Each card leads with a photograph of the space that offering actually uses.
-  No two are of the same room, and none repeats the outdoor hero directly
-  above them. Weddings takes the chapel for that reason, and because client
-  policy rules out photographs of real weddings, so the empty space has to
-  carry the page.
+  No two are of the same room. Weddings takes the deck at dusk rather than the
+  chapel, which leads the hero directly above, and because client policy rules
+  out photographs of real weddings, so the empty space has to carry the page.
 */
 const offerings = [
   {
@@ -58,8 +71,8 @@ const offerings = [
     href: "/weddings",
     Icon: WeddingIcon,
     photo: {
-      src: "/venue/Ladybug_Chapel.jpg",
-      alt: "Inside the chapel, with wooden pews lined with white flowers leading to a cross at the front",
+      src: "/venue/Ladybug_Outdoor_Deck.jpg",
+      alt: "The outdoor deck at dusk, strung with warm string lights along the hedge",
     },
     description:
       "Rent the whole venue, indoor and outdoor, or choose a small all-inclusive package built for a budget-friendly wedding day.",
@@ -113,11 +126,15 @@ export default function Home() {
         className="relative flex min-h-svh items-center justify-center overflow-hidden text-center text-white"
       >
         <HeroSlideshow slides={heroSlides} />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/55 to-black/65"
-        />
-        <div className="relative mx-auto max-w-3xl px-6 pt-20 pb-16">
+        {/* `isolate` keeps the scrim's negative z-index inside this block,
+            so it sits behind the copy but still above the photo. */}
+        <div className="relative isolate mx-auto max-w-3xl px-6 pt-20 pb-16">
+          {/* A soft dark pool behind the copy only, so the photo around it
+              can stay bright. Fades to nothing well before the edges. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -inset-x-16 -inset-y-4 -z-10 bg-[radial-gradient(closest-side,rgba(0,0,0,0.45),transparent)]"
+          />
           {/* The logo carries the name, so it stays inside the h1 and its alt
               text is what search engines and screen readers read as the
               heading. */}
@@ -130,13 +147,12 @@ export default function Home() {
               // Above the fold, but not the LCP (the photo is). Eager without a
               // preload, so it does not compete with the photo in the head.
               loading="eager"
-              className="mx-auto h-auto w-full max-w-sm md:max-w-lg"
+              className="mx-auto h-auto w-full max-w-sm drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)] md:max-w-lg"
             />
           </h1>
-          {/* Full white. The daylight slides are far brighter than the chapel
-              photo that used to lead here, so the gradient behind this runs
-              darker than it did. */}
-          <p className="mt-6 text-lg leading-8 text-white">
+          {/* Full white, with a shadow and the scrim above doing the work a
+              heavy overlay used to. */}
+          <p className="mt-6 text-lg leading-8 text-white [text-shadow:0_1px_10px_rgba(0,0,0,0.65)]">
             A family-run event space where we bring your events to life,
             from weddings and private celebrations to free programming for
             our community.

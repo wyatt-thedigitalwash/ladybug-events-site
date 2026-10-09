@@ -1,10 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Image from "next/image";
 import { Pause, Play } from "lucide-react";
 
-export type HeroSlide = { src: string; alt: string };
+export type HeroSlide = {
+  src: string;
+  alt: string;
+  // Gradient stops for this slide's darkening overlay, e.g.
+  // "from-black/60 via-black/45 to-black/60". Written out in full by the
+  // caller so Tailwind can find the classes.
+  overlay: string;
+};
 
 const INTERVAL_MS = 6000;
 
@@ -38,7 +45,7 @@ export default function HeroSlideshow({ slides }: { slides: HeroSlide[] }) {
     if (!playing) return;
     const timer = window.setInterval(
       () => setActive((i) => (i + 1) % slides.length),
-      INTERVAL_MS
+      INTERVAL_MS,
     );
     return () => window.clearInterval(timer);
   }, [playing, slides.length]);
@@ -46,24 +53,33 @@ export default function HeroSlideshow({ slides }: { slides: HeroSlide[] }) {
   return (
     <>
       {slides.map((slide, i) => (
-        <Image
-          key={slide.src}
-          src={slide.src}
-          // Only the showing photo is announced. The others are the same
-          // hero at another moment, not extra content.
-          alt={i === active ? slide.alt : ""}
-          aria-hidden={i === active ? undefined : true}
-          fill
-          // The LCP element at every viewport. `preload` replaces the
-          // `priority` prop, deprecated in Next 16. Neither sets
-          // fetchpriority, so it is passed explicitly.
-          preload={i === 0}
-          fetchPriority={i === 0 ? "high" : "low"}
-          sizes="100vw"
-          className={`object-cover transition-opacity duration-[1500ms] ease-in-out motion-reduce:transition-none ${
-            i === active ? "opacity-100" : "opacity-0"
-          }`}
-        />
+        <Fragment key={slide.src}>
+          <Image
+            src={slide.src}
+            // Only the showing photo is announced. The others are the same
+            // hero at another moment, not extra content.
+            alt={i === active ? slide.alt : ""}
+            aria-hidden={i === active ? undefined : true}
+            fill
+            // The LCP element at every viewport. `preload` replaces the
+            // `priority` prop, deprecated in Next 16. Neither sets
+            // fetchpriority, so it is passed explicitly.
+            preload={i === 0}
+            fetchPriority={i === 0 ? "high" : "low"}
+            sizes="100vw"
+            className={`object-cover transition-opacity duration-[1500ms] ease-in-out motion-reduce:transition-none ${
+              i === active ? "opacity-100" : "opacity-0"
+            }`}
+          />
+          {/* Fades with its photo, so the darkening always matches what is
+            showing rather than one level tuned for the brightest slide. */}
+          <div
+            aria-hidden="true"
+            className={`absolute inset-0 bg-gradient-to-b ${slide.overlay} transition-opacity duration-[1500ms] ease-in-out motion-reduce:transition-none ${
+              i === active ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        </Fragment>
       ))}
 
       {slides.length > 1 && !reducedMotion && (
