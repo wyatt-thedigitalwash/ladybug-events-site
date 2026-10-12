@@ -298,7 +298,7 @@ Client's guidance on both the inquiry form and RSVP system: no existing system t
   - Small all-inclusive weddings: budget-friendly option, vendors bundled in (servewear, flatware, kitchen area, catering, photographer, officiant), with some add-ons available (e.g. bar service).
   - Officiant is nondenominational, but only Christian ceremonies are permitted in the chapel specifically ("no other gods in the chapel" per client, phrase this carefully/diplomatically in final copy).
   - Bluetooth surround sound available.
-  - Bar service available, client recommends TB Mixology as a vendor.
+  - Bar service available as an add-on. The vendor name (TB Mixology) was removed from the site at the client's request in 2026-10.
   - IMPORTANT: No photos from actual weddings held at the venue may be used anywhere on the site — use general venue photography only for the Weddings page.
 - Events (birthdays, baby showers, etc.): client has no usable photos for this category. Pricing given: $500 indoor only, $775 indoor + outdoor.
 - Baptisms: photos available/uploaded from client.

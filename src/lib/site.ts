@@ -315,7 +315,7 @@ export const weddingPackages = [
       "Non-denominational Christian officiant",
       "Surround sound with Bluetooth connectivity",
     ],
-    addOns: ["Professional bar service, TB Mixology recommended"],
+    addOns: ["Professional bar service"],
   },
 ] as const;
 
