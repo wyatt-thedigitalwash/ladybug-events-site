@@ -92,14 +92,23 @@ export const communityEvents = [
     time: "9:00-11:00 AM",
     schedule: { weekday: 6, weeks: [1, 3] },
     rsvpRequired: false,
-    // Run by Faith Focus Community Development Corp, which keeps its own
-    // pantry listing on Vivery.
+    // Run by FFCDC, which keeps its own pantry listing on Vivery.
     link: {
-      href: "https://sites.vivery.org/faith-focus-community-development-corp/plant-city-fl/23446",
+      href: "https://sites.vivery.com/faith-focus-community-development-corp/plant-city-fl/23446",
       label: "Pantry details",
     },
   },
 ] as const;
+
+/*
+  The nonprofit behind the community events. It has no website of its own; the
+  client pointed us at its Vivery listing (the old vivery.org address 301s to
+  vivery.com).
+*/
+export const ffcdc = {
+  name: "Faith Focus Community Development Corp.",
+  href: "https://sites.vivery.com/faith-focus-community-development-corp/plant-city-fl/23446",
+} as const;
 
 /*
   A baby shower held at the venue, client-supplied. The first photographs we
@@ -365,10 +374,17 @@ export const venueAmenities = [
   "Customizable layouts",
 ] as const;
 
+// Catering through bartender added in the 2026-10 round; the client expects to
+// add more vendors as they make connections.
 export const venueAddOns = [
   "AV equipment",
   "Outdoor LED signage",
   "Catering supplies",
+  "Catering",
+  "Photography",
+  "Floral arrangements",
+  "Wedding planner",
+  "Bartender",
 ] as const;
 
 // What the vendor partnership form offers. Validated against server-side too.

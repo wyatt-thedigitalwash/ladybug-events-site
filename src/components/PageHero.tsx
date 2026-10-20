@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import HiddenLadybug, { type BugSpot } from "./motifs/HiddenLadybug";
 
 // One hero per page, so a fixed id is unique.
@@ -9,7 +10,7 @@ export default function PageHero({
   bug = "bottom-right",
 }: {
   title: string;
-  description?: string;
+  description?: ReactNode;
   bug?: BugSpot;
 }) {
   return (

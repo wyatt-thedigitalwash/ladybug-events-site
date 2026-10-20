@@ -35,7 +35,7 @@ LadyBug Events is a family-run event venue (owned and operated by a group of sis
 ## Events & Baptisms Content
 Events and Baptisms were built out from client-confirmed facts only.
 - `eventPackages` carries the two rentals; both prices are client-confirmed. Guest counts and access hours are deliberately absent, since the only figures for those come from the wedding one-sheet and have not been confirmed for private events.
-- `venueAmenities` (Included) and `venueAddOns` (Add-ons) are the client's own lists from their 2026-09 revisions. "Comfortable seating" became "Tables + chairs" and "Surround sound" became the AV equipment add-on. The wedding package still lists surround sound; the change was for the Events section only.
+- `venueAmenities` (Included) and `venueAddOns` (Add-ons) are the client's own lists from their 2026-09 revisions. "Comfortable seating" became "Tables + chairs" and "Surround sound" became the AV equipment add-on. The wedding package still lists surround sound; the change was for the Events section only. The 2026-10 round added Catering, Photography, Floral arrangements, Wedding planner and Bartender to the add-ons, and the client will send more as they line up vendors.
 - Baptisms uses the chapel photo and routes pricing to the Events page rather than restating it, so there is one place to update.
 - Photo usage: home hero slideshow leads with the chapel, then the deck at dusk, the deck in daylight and the yard (client is sending more outdoor photos); chapel also on Weddings and Baptisms; outdoor deck at dusk on Weddings and in the Events gallery; the five `public/events/` photos in the Events "The Spaces" gallery; the baptismal pool on Baptisms.
 - The Events gallery uses CSS columns, not a grid. The photos mix portrait and landscape and this keeps each at its own proportions instead of cropping them all to a shared box.
@@ -190,6 +190,7 @@ The community event cards are the RSVP picker; there is no event dropdown.
 - The form only mounts once the dialog opens, so on the statically built home page the dates are computed in the browser on the day, not frozen at build time.
 - The server checks the posted date matches the schedule and falls in the same window, allowing the day before today for a form opened just before midnight. Stored in `event_date`, so the admin card and CSV show which session the RSVP is for.
 - The food pantry card links to FFCDC's Vivery listing (`link` on the pantry entry), opening in a new tab.
+- The community intro on Home and the Community hero (`FfcdcSupport`) names Faith Focus Community Development Corp. as a nonprofit the venue supports, linked to the same Vivery listing (`ffcdc` in site.ts). FFCDC has no website of its own.
 
 ## Vendor Partnership Form
 `/contact/vendor`, linked from an outlined band on Contact below the tour band. For photographers, florists, bands and other businesses who want to work with the venue, a separate audience from people booking it.

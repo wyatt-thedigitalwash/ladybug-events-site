@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
+import FfcdcSupport from "@/components/FfcdcSupport";
 import CommunityRsvp from "@/components/CommunityRsvp";
 import { BreadcrumbJsonLd, ServiceJsonLd } from "@/components/seo/JsonLd";
 import { workoutPhotos } from "@/lib/site";
@@ -36,7 +37,7 @@ export default async function CommunityPage({
       <PageHero
         bug="bottom-left"
         title="Free Events for the Neighborhood"
-        description="The Ladybug Venue is proud to open its doors to the neighborhood with regular FFCDC community events."
+        description={<FfcdcSupport />}
       />
 
       <section

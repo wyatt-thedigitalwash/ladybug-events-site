@@ -21,6 +21,7 @@ import {
   workoutPhotos,
 } from "@/lib/site";
 import { pageMetadata, seoPages } from "@/lib/seo";
+import FfcdcSupport from "@/components/FfcdcSupport";
 
 // No breadcrumb here: a trail of one item says nothing.
 export const metadata = pageMetadata(seoPages.home);
@@ -234,8 +235,7 @@ export default function Home() {
             Free Community Programming
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-foreground/85">
-            The Ladybug Venue is proud to open its doors to the neighborhood
-            with regular FFCDC community events.
+            <FfcdcSupport />
           </p>
           <ul className="mt-12 grid gap-6 sm:grid-cols-3 lg:gap-8">
             {communityEvents.map((event) => (
